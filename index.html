@@ -12,136 +12,398 @@
       color: #e8eaf6;
       min-height: 100vh;
     }
+
+    /* ── HEADER ── */
     header {
-      padding: 48px 24px 32px;
+      padding: 56px 24px 40px;
       text-align: center;
       border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(99,102,241,0.12) 0%, transparent 70%);
+      pointer-events: none;
     }
     .logo {
       display: inline-flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
+      gap: 16px;
+      margin-bottom: 20px;
     }
-    .logo-dot {
-      width: 16px; height: 16px;
-      background: #22c55e;
-      border-radius: 50%;
-      box-shadow: 0 0 12px rgba(34,197,94,0.6);
+    .logo-icon {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 0 24px rgba(99,102,241,0.3), 0 4px 16px rgba(0,0,0,0.4);
+      flex-shrink: 0;
     }
-    h1 { font-size: 2rem; font-weight: 700; }
+    .logo-icon svg { width: 100%; height: 100%; display: block; }
+    h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; }
     .subtitle {
-      color: #7b82a6;
-      margin-top: 8px;
-      font-size: 1rem;
+      color: #7b82a6; margin-top: 10px; font-size: 1rem;
+      max-width: 480px; margin-inline: auto; line-height: 1.5;
     }
-    main {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 48px 24px;
+    .header-badges {
+      display: flex; gap: 10px; justify-content: center;
+      margin-top: 20px; flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px; padding: 5px 12px; font-size: 0.78rem; color: #9ba3bf;
+    }
+    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
+
+    /* ── MAIN ── */
+    main { max-width: 800px; margin: 0 auto; padding: 52px 24px; }
+
+    /* ── PREVIEW ── */
+    .preview-section {
+      display: flex; align-items: center; gap: 32px;
+      margin-bottom: 52px; flex-wrap: wrap;
+    }
+    .preview-text { flex: 1; min-width: 220px; }
+    .preview-text h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; color: #e8eaf6; }
+    .preview-text p  { font-size: 0.9rem; color: #7b82a6; line-height: 1.65; }
+    .preview-mockup {
+      width: 200px; flex-shrink: 0; background: #1a1d2e;
+      border-radius: 14px; border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.5); margin: 0 auto;
+    }
+    .mock-header {
+      background: #141624; padding: 10px 14px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .mock-icon { width: 22px; height: 22px; border-radius: 5px; overflow: hidden; }
+    .mock-icon svg { width: 100%; height: 100%; }
+    .mock-title { font-size: 0.75rem; font-weight: 700; color: #e8eaf6; }
+    .mock-body { padding: 12px 14px; }
+    .mock-manga-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .mock-manga-row:last-child { border-bottom: none; }
+    .mock-green-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
+      box-shadow: 0 0 6px rgba(34,197,94,0.7); flex-shrink: 0;
+    }
+    .mock-gray-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); flex-shrink: 0;
+    }
+    .mock-text { flex: 1; }
+    .mock-manga-name { font-size: 0.65rem; color: #c5c8e0; font-weight: 600; display: block; }
+    .mock-chapter    { font-size: 0.58rem; color: #5a5f7a; }
+    .mock-footer {
+      background: #141624; padding: 8px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .mock-btn { font-size: 0.6rem; color: #6366f1; font-weight: 600; }
+    .mock-exclaim {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; color: #9ba3bf; font-weight: 700;
+    }
+
+    /* ── FEATURES ── */
+    .section-label {
+      text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.7rem;
+      color: #6366f1; font-weight: 600; margin-bottom: 16px;
     }
     .features {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 48px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px; margin-bottom: 52px;
     }
     .feature {
-      background: #1a1d2e;
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 10px;
-      padding: 20px;
+      background: #1a1d2e; border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 20px;
+      transition: border-color 0.2s, transform 0.2s;
     }
-    .feature-icon { font-size: 1.5rem; margin-bottom: 10px; }
-    .feature h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; }
-    .feature p { font-size: 0.85rem; color: #7b82a6; line-height: 1.5; }
-    .cta {
-      text-align: center;
-      padding: 32px;
-      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(34,197,94,0.1));
-      border: 1px solid rgba(99,102,241,0.2);
-      border-radius: 12px;
-      margin-bottom: 40px;
+    .feature:hover { border-color: rgba(99,102,241,0.3); transform: translateY(-2px); }
+    .feature-icon { font-size: 1.4rem; margin-bottom: 10px; }
+    .feature h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #d0d3f0; }
+    .feature p  { font-size: 0.82rem; color: #7b82a6; line-height: 1.55; }
+
+    /* ── CTA BLOCKS ── */
+    .cta-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px; margin-bottom: 40px;
     }
-    .cta h2 { font-size: 1.2rem; margin-bottom: 8px; }
-    .cta p { color: #7b82a6; font-size: 0.9rem; margin-bottom: 16px; }
+    .cta { text-align: center; padding: 28px 28px 24px; border-radius: 14px; border: 1px solid rgba(99,102,241,0.2); }
+    .cta-install { background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(34,197,94,0.07)); }
+    .cta-soon    { background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(99,102,241,0.06)); border-color: rgba(34,197,94,0.2); }
+    .cta-support { background: linear-gradient(135deg, rgba(249,168,37,0.07), rgba(99,102,241,0.07)); border-color: rgba(249,168,37,0.2); grid-column: 1 / -1; }
+    .cta h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+    .cta p  { color: #7b82a6; font-size: 0.87rem; margin-bottom: 18px; line-height: 1.5; }
+
+    .coming-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25);
+      border-radius: 20px; padding: 4px 12px; font-size: 0.72rem; color: #4ade80;
+      font-weight: 600; margin-bottom: 12px;
+    }
+    .coming-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; animation: pulse 1.6s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+    .play-store-visual {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; margin-bottom: 14px; opacity: 0.75;
+    }
+    .play-icon { width: 40px; height: 40px; }
+
+    .support-cards {
+      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 4px;
+    }
+    .support-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; padding: 14px 20px; text-align: center;
+      min-width: 180px; flex: 1; max-width: 220px;
+    }
+    .support-card-icon { font-size: 1.5rem; margin-bottom: 8px; }
+    .support-card h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: #d0d3f0; }
+    .support-card p  { font-size: 0.78rem; color: #7b82a6; line-height: 1.45; }
+
     .btn {
-      display: inline-block;
-      background: #6366f1;
-      color: white;
-      padding: 10px 24px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 0.9rem;
-      transition: background 0.15s;
+      display: inline-block; color: white; padding: 10px 22px;
+      border-radius: 8px; text-decoration: none; font-weight: 600;
+      font-size: 0.88rem; transition: background 0.15s, transform 0.15s;
     }
-    .btn:hover { background: #4f52d8; }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: #6366f1; }
+    .btn-primary:hover { background: #4f52d8; }
+    .btn-green   { background: #16a34a; }
+    .btn-green:hover   { background: #15803d; }
+    .btn-amber   { background: #d97706; }
+    .btn-amber:hover   { background: #b45309; }
+    .btn-outline {
+      background: transparent; border: 1.5px solid rgba(255,255,255,0.2); color: #c5c8e0;
+    }
+    .btn-outline:hover { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.04); }
+
+    .bug-hint {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 10px; font-size: 0.8rem; color: #5a5f7a;
+    }
+    .bug-exclaim-inline {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      font-size: 0.72rem; color: #9ba3bf; font-weight: 700; flex-shrink: 0;
+    }
+
     footer {
-      text-align: center;
-      padding: 24px;
-      color: #7b82a6;
-      font-size: 0.8rem;
-      border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center; padding: 24px; color: #7b82a6;
+      font-size: 0.78rem; border-top: 1px solid rgba(255,255,255,0.06);
     }
     footer a { color: #6366f1; text-decoration: none; }
     footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 500px) {
+      h1 { font-size: 1.6rem; }
+      .preview-section { gap: 20px; }
+      .cta-support { grid-column: unset; }
+    }
   </style>
 </head>
 <body>
+
   <header>
     <div class="logo">
-      <div class="logo-dot"></div>
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+          <rect width="128" height="128" rx="24" fill="#1a1d2e"/>
+          <rect x="24" y="16" width="56" height="76" rx="8" fill="#252840"/>
+          <rect x="30" y="30" width="30" height="4" rx="2" fill="#6366f1"/>
+          <rect x="30" y="42" width="24" height="4" rx="2" fill="#6366f1" opacity="0.6"/>
+          <rect x="30" y="54" width="20" height="4" rx="2" fill="#6366f1" opacity="0.4"/>
+          <rect x="30" y="66" width="28" height="4" rx="2" fill="#6366f1" opacity="0.3"/>
+          <circle cx="88" cy="88" r="24" fill="#22c55e"/>
+          <path d="M76 88l9 9 18-18" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <h1>Manga Tracker</h1>
     </div>
-    <p class="subtitle">Extension Chrome — Suivi de lecture manga sur tous les sites de scans</p>
+    <p class="subtitle">Extension Chrome &mdash; Suivi de lecture manga sur tous les sites de scans</p>
+    <div class="header-badges">
+      <span class="badge"><span class="badge-dot"></span>Gratuit &amp; Open-source</span>
+      <span class="badge">&#128218; Multi-sites</span>
+      <span class="badge">&#9729;&#65039; Google Drive Sync</span>
+      <span class="badge">&#128274; Données privées</span>
+    </div>
   </header>
 
   <main>
+
+    <!-- APERÇU VISUEL DE L'EXTENSION -->
+    <div class="preview-section">
+      <div class="preview-text">
+        <p class="section-label">Aperçu de l'extension</p>
+        <h2>Votre bibliothèque manga,<br>toujours à portée de clic</h2>
+        <p>Ouvrez le popup depuis n'importe quelle page avec <strong>Alt+M</strong>.
+        Consultez votre progression, marquez des chapitres, et synchronisez avec
+        Google Drive — sans quitter votre lecture.</p>
+      </div>
+      <div class="preview-mockup">
+        <div class="mock-header">
+          <div class="mock-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+              <rect width="128" height="128" rx="24" fill="#1a1d2e"/>
+              <rect x="24" y="16" width="56" height="76" rx="8" fill="#252840"/>
+              <rect x="30" y="30" width="30" height="4" rx="2" fill="#6366f1"/>
+              <rect x="30" y="42" width="24" height="4" rx="2" fill="#6366f1" opacity="0.6"/>
+              <circle cx="88" cy="88" r="24" fill="#22c55e"/>
+              <path d="M76 88l9 9 18-18" stroke="white" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="mock-title">Manga Tracker</span>
+        </div>
+        <div class="mock-body">
+          <div class="mock-manga-row">
+            <span class="mock-green-dot"></span>
+            <div class="mock-text">
+              <span class="mock-manga-name">Solo Leveling</span>
+              <span class="mock-chapter">Chap. 201 &middot; Lu</span>
+            </div>
+          </div>
+          <div class="mock-manga-row">
+            <span class="mock-green-dot"></span>
+            <div class="mock-text">
+              <span class="mock-manga-name">Jujutsu Kaisen</span>
+              <span class="mock-chapter">Chap. 264 &middot; Lu</span>
+            </div>
+          </div>
+          <div class="mock-manga-row">
+            <span class="mock-gray-dot"></span>
+            <div class="mock-text">
+              <span class="mock-manga-name">Berserk</span>
+              <span class="mock-chapter">Chap. 374 &middot; À lire</span>
+            </div>
+          </div>
+          <div class="mock-manga-row">
+            <span class="mock-green-dot"></span>
+            <div class="mock-text">
+              <span class="mock-manga-name">Chainsaw Man</span>
+              <span class="mock-chapter">Chap. 170 &middot; Lu</span>
+            </div>
+          </div>
+        </div>
+        <div class="mock-footer">
+          <span class="mock-btn">&#9881; Sync Drive</span>
+          <span class="mock-exclaim">!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FONCTIONNALITÉS -->
+    <p class="section-label">Fonctionnalités</p>
     <div class="features">
       <div class="feature">
-        <div class="feature-icon">🟢</div>
+        <div class="feature-icon">&#128994;</div>
         <h3>Point vert automatique</h3>
         <p>Les chapitres déjà lus sont marqués d'un point vert sur la page du manga.</p>
       </div>
       <div class="feature">
-        <div class="feature-icon">📖</div>
+        <div class="feature-icon">&#128214;</div>
         <h3>Enregistrement auto</h3>
         <p>La lecture est enregistrée automatiquement dès que vous ouvrez un chapitre.</p>
       </div>
       <div class="feature">
-        <div class="feature-icon">☁️</div>
+        <div class="feature-icon">&#9729;&#65039;</div>
         <h3>Sync Google Drive</h3>
         <p>Vos données se synchronisent entre tous vos appareils via Google Drive.</p>
       </div>
       <div class="feature">
-        <div class="feature-icon">🌐</div>
+        <div class="feature-icon">&#127760;</div>
         <h3>Tous les sites</h3>
-        <p>Compatible avec raijin-scans, phenix-scans, asurascans, mangakawaii et bien d'autres.</p>
+        <p>Compatible avec Raijin-scans, Phénix-scans, AsuraScans, MangaKawaii et bien d'autres.</p>
       </div>
       <div class="feature">
-        <div class="feature-icon">📊</div>
+        <div class="feature-icon">&#128202;</div>
         <h3>Progression</h3>
         <p>Barre de progression, statut (en cours / terminé / en pause) et notes par manga.</p>
       </div>
       <div class="feature">
-        <div class="feature-icon">⌨️</div>
+        <div class="feature-icon">&#9875;&#65039;</div>
         <h3>Raccourci Alt+M</h3>
         <p>Ouvrez le popup depuis n'importe quelle page avec Alt+M.</p>
       </div>
     </div>
 
-    <div class="cta">
-      <h2>Installer l'extension</h2>
-      <p>Disponible en chargement local (mode développeur Chrome)</p>
-      <a href="https://github.com/Tiudge/manga-tracker" class="btn">Voir sur GitHub</a>
+    <!-- BLOCS CTA -->
+    <div class="cta-grid">
+
+      <!-- CTA 1 : Installer Chrome -->
+      <div class="cta cta-install">
+        <h2>&#128279; Installer l'extension</h2>
+        <p>Disponible en chargement local via le mode développeur Chrome.</p>
+        <a href="https://download-directory.github.io/?url=https://github.com/Garis24/manga-tracker/tree/main/manga-tracker-extension&filename=manga-tracker-extension.zip" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Télécharger l'extension
+        </a>
+      </div>
+
+      <!-- CTA 2 : Bientôt sur Google Play -->
+      <div class="cta cta-soon">
+        <div class="coming-badge">
+          <span class="coming-dot"></span>
+          Bientôt disponible
+        </div>
+        <div class="play-store-visual">
+          <img class="play-icon" src="https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg" alt="" width="40" height="40" loading="lazy">
+          <span style="font-size:1rem;color:#d0d3f0;font-weight:700;">Chrome Web Store</span>
+        </div>
+        <h2>Bientôt sur le Chrome Web Store</h2>
+        <p>Une version publique est prévue pour le Chrome Web Store afin d'installer l'extension plus facilement, sans passer par le mode développeur.</p>
+        <a href="https://chromewebstore.google.com/" class="btn btn-green" target="_blank" rel="noopener noreferrer">
+          Voir le Chrome Web Store
+        </a>
+      </div>
+
+      <!-- CTA 3 : Nous soutenir -->
+      <div class="cta cta-support">
+        <h2>&#128155; Soutenir le projet</h2>
+        <p>Manga Tracker est gratuit et open-source. Si vous l'appréciez, voici comment nous aider :</p>
+        <div class="support-cards">
+
+          <div class="support-card">
+            <div class="support-card-icon">&#128176;</div>
+            <h3>Soutien financier</h3>
+            <p>Un don, même petit, nous aide à maintenir et améliorer l'extension activement.</p>
+            <br>
+            <a href="https://ko-fi.com/" class="btn btn-amber" target="_blank" rel="noopener noreferrer" style="font-size:0.82rem;padding:8px 18px;">
+              Faire un don &#9749;
+            </a>
+          </div>
+
+          <div class="support-card">
+            <div class="support-card-icon">&#128027;</div>
+            <h3>Signaler un bug</h3>
+            <p>Vous avez trouvé un problème ? Signalez-le via le bouton dans l'extension ou sur GitHub.</p>
+            <br>
+            <div class="bug-hint" style="justify-content:center;margin-bottom:10px;">
+              <span class="bug-exclaim-inline">!</span>
+              <span>Cliquez sur <strong style="color:#c5c8e0;">!</strong> dans le popup de l'extension</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
   </main>
 
   <footer>
-    Créé par <strong>Tiudge</strong> &nbsp;·&nbsp;
-    <a href="privacy.html">Politique de confidentialité</a> &nbsp;·&nbsp;
+    Créé par <strong>Tiudge</strong> &nbsp;&middot;&nbsp;
+    <a href="privacy.html">Politique de confidentialité</a> &nbsp;&middot;&nbsp;
     <a href="terms.html">Conditions d'utilisation</a>
   </footer>
+
 </body>
 </html>
