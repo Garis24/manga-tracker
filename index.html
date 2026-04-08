@@ -278,6 +278,20 @@
       font-family: Consolas, monospace;
       font-size: 0.8rem;
     }
+    .chrome-link-btn {
+      background: rgba(99,102,241,0.12);
+      color: #cfd2ff;
+      border: 1px solid rgba(99,102,241,0.25);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: Consolas, monospace;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+
+    .chrome-link-btn:hover {
+      background: rgba(99,102,241,0.2);
+    }
   </style>
 </head>
 <body>
@@ -429,7 +443,11 @@
             <ol>
               <li>Téléchargez le fichier ZIP de l’extension.</li>
               <li>Extrayez le dossier <strong>manga-tracker-extension</strong> à l’endroit où vous voulez le conserver.</li>
-              <li>Ouvrez Chrome puis allez sur <a href="chrome://extensions/">chrome://extensions/</a>.</li>
+              <li>Ouvrez Chrome puis allez sur <button type="button" class="chrome-link-btn" onclick="copyChromeExtensionsUrl()">chrome://extensions/</button>
+                <span id="copy-feedback" style="display:none; margin-left:8px; color:#22c55e;">
+                  Copié !
+                </span>
+              </li>
               <li>Activez le <strong>Mode développeur</strong> en haut à droite.</li>
               <li>Cliquez sur <strong>Charger l’extension non empaquetée</strong>.</li>
               <li>Sélectionnez le dossier <strong>manga-tracker-extension</strong>.</li>
@@ -499,6 +517,15 @@
 
     button.setAttribute('aria-expanded', String(!isOpen));
     content.hidden = isOpen;
+  }
+  function copyChromeExtensionsUrl() {
+    navigator.clipboard.writeText('chrome://extensions/').then(() => {
+      const feedback = document.getElementById('copy-feedback');
+      feedback.style.display = 'inline';
+      setTimeout(() => {
+        feedback.style.display = 'none';
+      }, 2000);
+    });
   }
   </script>
 </body>
