@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manga Tracker — Extension Chrome</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e8eaf6;
+      min-height: 100vh;
+    }
+    header {
+      padding: 48px 24px 32px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .logo-dot {
+      width: 16px; height: 16px;
+      background: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(34,197,94,0.6);
+    }
+    h1 { font-size: 2rem; font-weight: 700; }
+    .subtitle {
+      color: #7b82a6;
+      margin-top: 8px;
+      font-size: 1rem;
+    }
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .feature {
+      background: #1a1d2e;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .feature-icon { font-size: 1.5rem; margin-bottom: 10px; }
+    .feature h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 6px; }
+    .feature p { font-size: 0.85rem; color: #7b82a6; line-height: 1.5; }
+    .cta {
+      text-align: center;
+      padding: 32px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(34,197,94,0.1));
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 12px;
+      margin-bottom: 40px;
+    }
+    .cta h2 { font-size: 1.2rem; margin-bottom: 8px; }
+    .cta p { color: #7b82a6; font-size: 0.9rem; margin-bottom: 16px; }
+    .btn {
+      display: inline-block;
+      background: #6366f1;
+      color: white;
+      padding: 10px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #4f52d8; }
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #7b82a6;
+      font-size: 0.8rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    footer a { color: #6366f1; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-dot"></div>
+      <h1>Manga Tracker</h1>
+    </div>
+    <p class="subtitle">Extension Chrome — Suivi de lecture manga sur tous les sites de scans</p>
+  </header>
+
+  <main>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🟢</div>
+        <h3>Point vert automatique</h3>
+        <p>Les chapitres déjà lus sont marqués d'un point vert sur la page du manga.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📖</div>
+        <h3>Enregistrement auto</h3>
+        <p>La lecture est enregistrée automatiquement dès que vous ouvrez un chapitre.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">☁️</div>
+        <h3>Sync Google Drive</h3>
+        <p>Vos données se synchronisent entre tous vos appareils via Google Drive.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🌐</div>
+        <h3>Tous les sites</h3>
+        <p>Compatible avec raijin-scans, phenix-scans, asurascans, mangakawaii et bien d'autres.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <h3>Progression</h3>
+        <p>Barre de progression, statut (en cours / terminé / en pause) et notes par manga.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⌨️</div>
+        <h3>Raccourci Alt+M</h3>
+        <p>Ouvrez le popup depuis n'importe quelle page avec Alt+M.</p>
+      </div>
+    </div>
+
+    <div class="cta">
+      <h2>Installer l'extension</h2>
+      <p>Disponible en chargement local (mode développeur Chrome)</p>
+      <a href="https://github.com/Tiudge/manga-tracker" class="btn">Voir sur GitHub</a>
+    </div>
+  </main>
+
+  <footer>
+    Créé par <strong>Tiudge</strong> &nbsp;·&nbsp;
+    <a href="privacy.html">Politique de confidentialité</a> &nbsp;·&nbsp;
+    <a href="terms.html">Conditions d'utilisation</a>
+  </footer>
+</body>
+</html>
