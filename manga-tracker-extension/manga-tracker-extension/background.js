@@ -256,42 +256,6 @@ async function getDriveTokenInteractive() {
   });
 }
 
-const AUTH_TIMEOUT_MS = 8000;
-
-function withTimeout(promise, ms) {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => {
-      reject(new Error('AUTH_TIMEOUT'));
-    }, ms);
-
-    promise
-      .then((value) => {
-        clearTimeout(timer);
-        resolve(value);
-      })
-      .catch((err) => {
-        clearTimeout(timer);
-        reject(err);
-      });
-  });
-}
-
-async function openGoogleLoginTabFallback() {
-  await chrome.tabs.create({
-    url: 'https://accounts.google.com/'
-  });
-}
-
-async function getDriveTokenInteractiveSafe() {
-  try {
-    return await withTimeout(getDriveTokenInteractive(), AUTH_TIMEOUT_MS);
-  } catch (err) {
-    await openGoogleLoginTabFallback();
-    throw new Error('FALLBACK_TAB_OPENED');
-  }
-}
-
-
 // Cherche l'ID du fichier de sync sur Drive
 async function findDriveFile(token) {
   const resp = await fetch(
@@ -408,31 +372,23 @@ async function syncToDrive() {
 // Sync depuis Drive vers local (utile au démarrage ou sur un nouvel appareil)
 async function syncFromDrive() {
   try {
-    const token = await getDriveTokenInteractiveSafe();
+    const token = await getDriveTokenInteractive();
     const existingFile = await findDriveFile(token);
-
     if (!existingFile) {
       return { success: false, reason: 'Aucun fichier Drive trouvé' };
     }
 
     const remoteDB = await readDriveFile(token, existingFile.id);
-    if (!remoteDB) {
-      return { success: false, reason: 'Fichier Drive vide' };
-    }
+    if (!remoteDB) return { success: false, reason: 'Fichier Drive vide' };
 
     const localDB = await getDB();
     const merged = mergeDBs(localDB, remoteDB);
     await saveDB(merged);
 
+    console.log('[Manga Tracker] ☁️ Import depuis Drive réussi');
     return { success: true, mangasCount: Object.keys(merged.mangas).length };
   } catch (err) {
-    return {
-      success: false,
-      reason: err.message === 'FALLBACK_TAB_OPENED'
-        ? 'Connexion Google ouverte dans un onglet'
-        : (err.message || 'Erreur de connexion Google Drive'),
-      fallbackOpened: err.message === 'FALLBACK_TAB_OPENED'
-    };
+    return { success: false, reason: err.message };
   }
 }
 

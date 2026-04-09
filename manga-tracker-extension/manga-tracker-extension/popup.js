@@ -503,14 +503,11 @@ document.getElementById('btn-force-sync').addEventListener('click', async () => 
 
 document.getElementById('btn-import-drive').addEventListener('click', async () => {
   const resp = await sendMsg('syncFromDrive');
-
-  if (resp?.success) {
+  if (resp.success) {
     showToast(`${resp.mangasCount} mangas importés depuis Drive`, 'success');
     await loadMangaList();
-  } else if (resp?.fallbackOpened) {
-    showToast('Connexion Google ouverte dans un onglet', 'warning');
   } else {
-    showToast(resp?.reason || 'Erreur de connexion Google Drive', 'error');
+    showToast(resp.reason || 'Erreur', 'error');
   }
 });
 
