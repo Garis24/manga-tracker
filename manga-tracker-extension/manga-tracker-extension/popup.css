@@ -58,7 +58,8 @@ button { cursor: pointer; }
 
 /* ── HEADER ── */
 body {
-  border-radius: 14px;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 header {
