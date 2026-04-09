@@ -2,12 +2,12 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manga Tracker</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
 
-  <!-- Header -->
   <header>
     <div class="logo">
       <svg viewBox="0 0 24 24" fill="none" aria-label="Manga Tracker" width="22" height="22">
@@ -19,43 +19,41 @@
       <span>Manga Tracker</span>
     </div>
     <div class="header-actions">
-      <button id="btn-report" class="btn-icon" title="Signaler un bug / site non reconnu">
+      <button id="btn-report" class="btn-icon" title="Signaler un bug ou un site non reconnu" aria-label="Signaler un bug ou un site non reconnu">
         <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
           <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
           <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </button>
-      <button id="btn-sync" class="btn-icon" title="Synchroniser avec Google Drive">
+      <button id="btn-sync" class="btn-icon" title="Synchroniser avec Google Drive" aria-label="Synchroniser avec Google Drive">
         <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
           <path d="M4 12C4 7.6 7.6 4 12 4c2.5 0 4.7 1.1 6.2 2.8M20 12c0 4.4-3.6 8-8 8-2.5 0-4.7-1.1-6.2-2.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
           <path d="M18 2l2.2 2.8L18 7.6M6 16.4L3.8 19.2 6 22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <button id="btn-settings" class="btn-icon btn-icon-with-badge" title="Paramètres">
+      <button id="btn-settings" class="btn-icon btn-icon-with-badge" title="Paramètres" aria-label="Paramètres">
         <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
           <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
           <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
-        <span id="settings-update-badge" class="mini-now-badge hidden">NOW</span>
+        <span id="settings-update-badge" class="mini-now-badge hidden">NEW</span>
       </button>
     </div>
   </header>
 
-  <!-- Page courante -->
   <div id="current-page-info" class="current-page hidden">
     <div class="page-badge" id="page-type-badge">—</div>
     <div class="page-details">
       <div class="page-manga-title" id="page-manga-title">—</div>
-      <div class="page-chapter" id="page-chapter-info">—</div>
+      <div class="page-chapter-info" id="page-chapter-info">—</div>
     </div>
-    <button id="btn-toggle-read" class="btn-toggle" title="Marquer lu/non lu">
+    <button id="btn-toggle-read" class="btn-toggle" title="Marquer lu ou non lu" aria-label="Marquer lu ou non lu">
       <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
         <path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
   </div>
 
-  <!-- Vue principale -->
   <div id="view-main">
     <div class="search-filter-bar">
       <div class="search-bar">
@@ -63,9 +61,9 @@
           <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
           <path d="M20 20l-3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
-        <input type="text" id="search-input" placeholder="Rechercher…">
+        <input type="text" id="search-input" placeholder="Rechercher un manga…">
       </div>
-      <select id="filter-status" class="filter-select">
+      <select id="filter-status" class="filter-select" aria-label="Filtrer par statut">
         <option value="">Tous</option>
         <option value="reading">En cours</option>
         <option value="completed">Terminé</option>
@@ -81,17 +79,16 @@
 
     <div id="manga-list" class="manga-list">
       <div class="empty-state" id="empty-state">
-        <svg viewBox="0 0 24 24" fill="none" width="32" height="32" opacity="0.3">
+        <svg viewBox="0 0 24 24" fill="none" width="32" height="32" opacity="0.45">
           <rect x="3" y="2" width="12" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
           <path d="M7 7h4M7 10h4M7 13h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
         </svg>
-        <p>Aucun manga suivi.</p>
+        <p>Aucun manga suivi</p>
         <small>Ouvre un chapitre pour commencer.</small>
       </div>
     </div>
   </div>
 
-  <!-- Vue détail d'un manga -->
   <div id="view-detail" class="hidden">
     <button id="btn-back" class="btn-back">
       <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
@@ -103,7 +100,6 @@
       <div class="detail-title" id="detail-title">—</div>
       <div class="detail-domain" id="detail-domain">—</div>
 
-      <!-- Statut -->
       <div class="detail-status-row">
         <select id="detail-status" class="status-select">
           <option value="reading">📖 En cours</option>
@@ -120,9 +116,9 @@
         <span class="dot">·</span>
         <span id="detail-last-read">—</span>
       </div>
+      <div class="detail-progress-bar"><div class="detail-progress-fill" id="detail-progress-fill" style="width:0%"></div></div>
     </div>
 
-    <!-- Notes -->
     <div class="notes-section">
       <textarea id="detail-notes" placeholder="Notes personnelles…" rows="3"></textarea>
       <button id="btn-save-notes" class="btn-save-notes">Enregistrer</button>
@@ -134,7 +130,6 @@
     </div>
   </div>
 
-  <!-- Vue paramètres -->
   <div id="view-settings" class="hidden">
     <button id="btn-back-settings" class="btn-back">
       <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
@@ -155,7 +150,7 @@
 
     <div class="settings-section">
       <h3>Google Drive Sync</h3>
-      <p class="settings-desc">Synchronisez vos données entre tous vos appareils (dossier caché, gratuit).</p>
+      <p class="settings-desc">Synchronisez vos données entre vos appareils dans un dossier caché et gratuit.</p>
       <div id="sync-status" class="sync-status">
         <span class="sync-dot" id="sync-dot"></span>
         <span id="sync-status-text">Non connecté</span>
@@ -180,7 +175,7 @@
     <div class="settings-section">
       <h3 class="section-title-with-badge">
         <span>Mise à jour</span>
-        <span id="menu-update-badge" class="inline-now-badge hidden">NOW V.</span>
+        <span id="menu-update-badge" class="inline-now-badge hidden">NEW</span>
       </h3>
       <p class="settings-desc">Vérifie automatiquement si une nouvelle version est disponible sur GitHub.</p>
 
@@ -198,11 +193,10 @@
 
     <div class="settings-section">
       <h3>À propos</h3>
-      <p class="settings-desc">Manga Tracker v<span id="ext-version">1.0.0</span><br>Fonctionne sur tous les sites de scans.</p>
+      <p class="settings-desc">Manga Tracker v<span id="ext-version">1.0.0</span><br>Le projet vise une compatibilité aussi large que possible avec les sites de lecture manga.</p>
     </div>
   </div>
 
-  <!-- Vue signalement de bug -->
   <div id="view-report" class="hidden">
     <button id="btn-back-report" class="btn-back">
       <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
@@ -212,7 +206,7 @@
     </button>
     <div class="settings-section">
       <h3>Signaler un problème</h3>
-      <p class="settings-desc">Site non reconnu, lecture non détectée, badges absents…</p>
+      <p class="settings-desc">Site non reconnu, lecture non détectée, badges absents ou navigation spéciale.</p>
 
       <div class="report-form">
         <label class="settings-label">URL du site concerné</label>
@@ -235,7 +229,6 @@
     </div>
   </div>
 
-  <!-- Signature -->
   <footer class="popup-footer">
     <span>Créé par <strong>Tiudge</strong></span>
     <a id="btn-paypal" href="#" class="paypal-btn" title="Soutenir le projet">
@@ -246,7 +239,6 @@
     </a>
   </footer>
 
-  <!-- Toast -->
   <div id="toast" class="toast hidden"></div>
 
   <script src="popup.js"></script>
