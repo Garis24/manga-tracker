@@ -5,6 +5,7 @@
  * - La synchronisation Google Drive (AppData, gratuit, invisible pour l'utilisateur)
  */
 
+
 // ──────────────────────────────────────────────
 // STRUCTURE DE LA BASE DE DONNÉES LOCALE
 // ──────────────────────────────────────────────
@@ -30,13 +31,130 @@
 //   version: 2
 // }
 
+const UPDATE_MANIFEST_URL = 'https://raw.githubusercontent.com/Garis24/manga-tracker/main/manga-tracker-extension/manga-tracker-extension/manifest.json';
+const UPDATE_ZIP_URL = 'https://download-directory.github.io/?url=https://github.com/Garis24/manga-tracker/tree/main/manga-tracker-extension&filename=manga-tracker-extension.zip';
+const UPDATE_CHECK_INTERVAL_MIN = 180;
+const UPDATE_STATE_KEY = 'mangaTrackerUpdateInfo';
 const DB_KEY = 'mangaTrackerDB';
-const DRIVE_FILE_NAME = 'manga_tracker_sync.json';
 const SYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+
+
+
+// ──────────────────────────────────────────────
+// TEST VERSTION
+// ──────────────────────────────────────────────
+chrome.alarms.create('checkExtensionUpdate', {
+  periodInMinutes: UPDATE_CHECK_INTERVAL_MIN
+});
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === 'checkExtensionUpdate') {
+    checkForExtensionUpdate().catch(() => {});
+  }
+});
+
+function compareVersions(a, b) {
+  const pa = String(a || '0').split('.').map(n => parseInt(n, 10) || 0);
+  const pb = String(b || '0').split('.').map(n => parseInt(n, 10) || 0);
+  const len = Math.max(pa.length, pb.length);
+
+  for (let i = 0; i < len; i++) {
+    const na = pa[i] || 0;
+    const nb = pb[i] || 0;
+    if (na > nb) return 1;
+    if (na < nb) return -1;
+  }
+  return 0;
+}
+
+async function saveUpdateInfo(info) {
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ [UPDATE_STATE_KEY]: info }, resolve);
+  });
+}
+
+async function getUpdateInfo() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(UPDATE_STATE_KEY, (res) => {
+      resolve(res[UPDATE_STATE_KEY] || null);
+    });
+  });
+}
+
+async function checkForExtensionUpdate() {
+  try {
+    const localVersion = chrome.runtime.getManifest().version;
+
+    const resp = await fetch(UPDATE_MANIFEST_URL, {
+      cache: 'no-store'
+    });
+
+    if (!resp.ok) {
+      throw new Error(`update_manifest_${resp.status}`);
+    }
+
+    const remoteManifest = await resp.json();
+    const remoteVersion = remoteManifest?.version;
+
+    if (!remoteVersion) {
+      throw new Error('missing_remote_version');
+    }
+
+    const hasUpdate = compareVersions(remoteVersion, localVersion) > 0;
+
+    const info = {
+      checkedAt: new Date().toISOString(),
+      localVersion,
+      remoteVersion,
+      hasUpdate,
+      downloadUrl: UPDATE_ZIP_URL
+    };
+
+    const previous = await getUpdateInfo();
+
+    if (hasUpdate && (!previous || previous.remoteVersion !== remoteVersion)) {
+      await notifyUpdateAvailable(info);
+    }
+    if (hasUpdate) {
+      chrome.action.setBadgeText({ text: 'NEW' });
+      chrome.action.setBadgeBackgroundColor({ color: '#22c55e' });
+    }
+
+    await saveUpdateInfo(info);
+    return { success: true, ...info };
+  } catch (err) {
+    const previous = await getUpdateInfo();
+    const fallback = {
+      ...(previous || {}),
+      checkedAt: new Date().toISOString(),
+      error: err.message || 'update_check_failed'
+    };
+    await saveUpdateInfo(fallback);
+    return { success: false, ...(previous || {}), error: err.message || 'update_check_failed' };
+  }
+}
+
+
+// ──────────────────────────────────────────────
+// Notif verstion
+// ──────────────────────────────────────────────
+
+async function notifyUpdateAvailable(info) {
+  if (!info?.hasUpdate) return;
+
+  chrome.notifications.create('manga-tracker-update', {
+    type: 'basic',
+    iconUrl: 'icons/icon128.png',
+    title: 'Manga Tracker',
+    message: `Nouvelle version disponible : v${info.remoteVersion} (actuelle : v${info.localVersion})`,
+    priority: 2
+  });
+}
 
 // ──────────────────────────────────────────────
 // HELPERS BDD LOCALE
 // ──────────────────────────────────────────────
+
 
 async function getDB() {
   return new Promise((resolve) => {
@@ -48,10 +166,12 @@ async function getDB() {
   });
 }
 
+
 async function getSettings() {
   const db = await getDB();
   return db.settings || { badgeSize: 'medium' };
 }
+
 
 async function saveSettings(settings) {
   const db = await getDB();
@@ -60,23 +180,28 @@ async function saveSettings(settings) {
   return { success: true };
 }
 
+
 async function saveDB(db) {
   return new Promise((resolve) => {
     chrome.storage.local.set({ [DB_KEY]: db }, resolve);
   });
 }
 
+
 function getMangaKey(domain, slug) {
   return `${domain}|${slug}`;
 }
+
 
 // ──────────────────────────────────────────────
 // MARQUER UN CHAPITRE COMME LU
 // ──────────────────────────────────────────────
 
+
 async function markAsRead({ mangaSlug, mangaTitle, chapterNumber, domain, url, readAt }) {
   const db = await getDB();
   const key = getMangaKey(domain, mangaSlug);
+
 
   if (!db.mangas[key]) {
     db.mangas[key] = {
@@ -93,12 +218,15 @@ async function markAsRead({ mangaSlug, mangaTitle, chapterNumber, domain, url, r
     };
   }
 
+
   const manga = db.mangas[key];
+
 
   // Mettre à jour le titre si vide ou "inconnu"
   if (manga.title === 'Manga inconnu' || !manga.title) {
     manga.title = mangaTitle;
   }
+
 
   // Ajouter le chapitre s'il n'est pas déjà lu
   if (!manga.chaptersRead.includes(chapterNumber)) {
@@ -106,24 +234,29 @@ async function markAsRead({ mangaSlug, mangaTitle, chapterNumber, domain, url, r
     manga.chaptersRead.sort((a, b) => a - b);
   }
 
+
   // Mettre à jour le dernier chapitre lu
   if (!manga.lastReadChapter || chapterNumber > manga.lastReadChapter) {
     manga.lastReadChapter = chapterNumber;
     manga.lastReadAt = readAt;
   }
 
+
   await saveDB(db);
   scheduleDriveSync();
   updateBadgeCount();
-  return { success: true, chaptersRead: manga.chaptersRead };
+  return { success: true };
 }
+
 
 // ──────────────────────────────────────────────
 // RÉCUPÉRER LES CHAPITRES LUS D'UN MANGA
 // ──────────────────────────────────────────────
 
+
 async function getReadChapters({ mangaSlug, domain }) {
   const db = await getDB();
+
 
   // 1. Correspondance exacte domain|slug
   const key = getMangaKey(domain, mangaSlug);
@@ -131,12 +264,14 @@ async function getReadChapters({ mangaSlug, domain }) {
     return { chapters: db.mangas[key].chaptersRead };
   }
 
+
   // 2. Même slug, domaine différent (ex: même manga sur un autre site)
   const allKeys = Object.keys(db.mangas);
   const exactSlug = allKeys.find(k => k.endsWith(`|${mangaSlug}`));
   if (exactSlug) {
     return { chapters: db.mangas[exactSlug].chaptersRead };
   }
+
 
   // 3. Correspondance partielle du slug (l'un contient l'autre)
   // Ex: "infinite-mage" vs "infinite-mage-75e30c62" (suffixe ID)
@@ -148,6 +283,7 @@ async function getReadChapters({ mangaSlug, domain }) {
   if (partialMatch) {
     return { chapters: db.mangas[partialMatch].chaptersRead };
   }
+
 
   // 4. Correspondance floue : les premiers mots du slug
   // Ex: "the-absolute" matche "the-absolute-s-modern-life"
@@ -162,317 +298,725 @@ async function getReadChapters({ mangaSlug, domain }) {
     }
   }
 
+
   return { chapters: [] };
 }
+
 
 // ──────────────────────────────────────────────
 // RÉCUPÉRER TOUS LES MANGAS
 // ──────────────────────────────────────────────
 
+
 async function getAllMangas() {
   const db = await getDB();
+
+
   const list = Object.values(db.mangas).map(m => ({
     key: getMangaKey(m.domain, m.slug),
     slug: m.slug,
     title: m.title,
     domain: m.domain,
-    chaptersRead: m.chaptersRead,
-    totalRead: m.chaptersRead.length,
+    chaptersRead: Array.isArray(m.chaptersRead) ? m.chaptersRead : [],
+    totalRead: Array.isArray(m.chaptersRead) ? m.chaptersRead.length : 0,
     totalChapters: m.totalChapters || null,
     lastReadChapter: m.lastReadChapter,
     lastReadAt: m.lastReadAt,
     status: m.status || 'reading',
     notes: m.notes || ''
   }));
-  // Trier par dernière lecture
-  list.sort((a, b) => new Date(b.lastReadAt) - new Date(a.lastReadAt));
+
+
+  list.sort((a, b) => {
+    const ta = a.lastReadAt ? new Date(a.lastReadAt).getTime() : 0;
+    const tb = b.lastReadAt ? new Date(b.lastReadAt).getTime() : 0;
+    return tb - ta;
+  });
+
+
   return { mangas: list };
 }
+
 
 // ──────────────────────────────────────────────
 // SUPPRIMER UN CHAPITRE OU UN MANGA
 // ──────────────────────────────────────────────
 
+
 async function unmarkChapter({ mangaSlug, domain, chapterNumber }) {
   const db = await getDB();
-  const key = getMangaKey(domain, mangaSlug);
-  if (!db.mangas[key]) return { success: false };
 
-  db.mangas[key].chaptersRead = db.mangas[key].chaptersRead.filter(c => c !== chapterNumber);
 
-  // Recalculer lastReadChapter
-  const chapters = db.mangas[key].chaptersRead;
-  db.mangas[key].lastReadChapter = chapters.length > 0 ? Math.max(...chapters) : null;
+  const allKeys = Object.keys(db.mangas);
+
+
+  let key = getMangaKey(domain, mangaSlug);
+
+
+  if (!db.mangas[key]) {
+    key = allKeys.find(k => k.endsWith(`|${mangaSlug}`));
+  }
+
+
+  if (!db.mangas[key]) {
+    key = allKeys.find(k => {
+      const storedSlug = k.split('|')[1] || '';
+      return storedSlug.startsWith(mangaSlug) || mangaSlug.startsWith(storedSlug);
+    });
+  }
+
+
+  if (!db.mangas[key]) {
+    const slugWords = mangaSlug.split('-').slice(0, 3).join('-');
+    if (slugWords.length >= 6) {
+      key = allKeys.find(k => {
+        const storedSlug = k.split('|')[1] || '';
+        return storedSlug.includes(slugWords) ||
+          slugWords.includes(storedSlug.split('-').slice(0, 3).join('-'));
+      });
+    }
+  }
+
+
+  if (!key || !db.mangas[key]) {
+    return { success: false, reason: "manga_not_found" };
+  }
+
+
+  const manga = db.mangas[key];
+  const before = manga.chaptersRead.length;
+
+
+  manga.chaptersRead = manga.chaptersRead.filter(c => c !== chapterNumber);
+
+
+  if (manga.chaptersRead.length === before) {
+    return { success: false, reason: "chapter_not_found" };
+  }
+
+
+  manga.lastReadChapter = manga.chaptersRead.length > 0
+    ? Math.max(...manga.chaptersRead)
+    : null;
+
+
+  if (manga.chaptersRead.length === 0) {
+    manga.lastReadAt = null;
+  }
+
 
   await saveDB(db);
-  scheduleDriveSync();
+  updateBadgeCount();
+
+  syncToDrive().catch(() => {});
+
   return { success: true };
 }
+
 
 async function deleteManga({ mangaSlug, domain }) {
   const db = await getDB();
   const key = getMangaKey(domain, mangaSlug);
+
+
+  if (!db.mangas[key]) {
+    return { success: false, reason: "manga_not_found" };
+  }
+
+
   delete db.mangas[key];
+
+
   await saveDB(db);
-  scheduleDriveSync();
   updateBadgeCount();
+
+  syncToDrive().catch(() => {});
+
   return { success: true };
 }
+
 
 // ──────────────────────────────────────────────
 // SYNCHRONISATION GOOGLE DRIVE (AppData folder)
 // Gratuit, invisible pour l'utilisateur, limite 100MB
 // ──────────────────────────────────────────────
 
+
+const TOKEN_KEY = "drive_token";
+const DRIVE_FILE_NAME = "manga_tracker_db.json";
+
+
 let syncTimer = null;
 
+
+// ───────── TOKEN ─────────
+
+
+async function storeToken(accessToken, expiresIn = 3600) {
+  const expiry = Date.now() + Math.max((expiresIn - 60) * 1000, 60 * 1000);
+
+
+  return new Promise((resolve) => {
+    chrome.storage.local.set(
+      { [TOKEN_KEY]: { accessToken, expiry } },
+      () => resolve({ success: true })
+    );
+  });
+}
+
+
+async function getStoredTokenData() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(TOKEN_KEY, (res) => {
+      resolve(res[TOKEN_KEY] || null);
+    });
+  });
+}
+
+
+async function getToken() {
+  const data = await getStoredTokenData();
+
+
+  if (!data || !data.accessToken || !data.expiry || data.expiry <= Date.now()) {
+    return null;
+  }
+
+
+  return data.accessToken;
+}
+
+
+async function clearToken() {
+  return new Promise((resolve) => {
+    chrome.storage.local.remove(TOKEN_KEY, () => resolve({ success: true }));
+  });
+}
+
+
+// ───────── AUTO SYNC ─────────
+
+
 function scheduleDriveSync() {
-  // Debounce : attend 10s d'inactivité avant de syncer
   if (syncTimer) clearTimeout(syncTimer);
-  syncTimer = setTimeout(syncToDrive, 10000);
-}
 
-async function getDriveToken() {
-  return new Promise((resolve, reject) => {
-    chrome.identity.getAuthToken({ interactive: false }, (token) => {
-      if (chrome.runtime.lastError || !token) {
-        reject(chrome.runtime.lastError || new Error('Pas de token'));
-      } else {
-        resolve(token);
-      }
+
+  syncTimer = setTimeout(() => {
+    syncToDrive().catch((err) => {
+      console.warn("[Manga Tracker] Auto sync Drive échouée :", err);
     });
-  });
+  }, 10000);
 }
 
-async function getDriveTokenInteractive() {
-  return new Promise((resolve, reject) => {
-    chrome.identity.getAuthToken({ interactive: true }, (token) => {
-      if (chrome.runtime.lastError || !token) {
-        reject(chrome.runtime.lastError || new Error('Auth annulée'));
-      } else {
-        resolve(token);
-      }
-    });
+
+// ───────── DRIVE HELPERS ─────────
+
+
+async function driveFetch(url, options = {}) {
+  const token = await getToken();
+  if (!token) {
+    throw new Error("not_connected");
+  }
+
+
+  const headers = {
+    ...(options.headers || {}),
+    Authorization: `Bearer ${token}`
+  };
+
+
+  const resp = await fetch(url, {
+    ...options,
+    headers
   });
+
+
+  if (resp.status === 401) {
+    await clearToken();
+    throw new Error("not_connected");
+  }
+
+
+  return resp;
 }
 
-// Cherche l'ID du fichier de sync sur Drive
-async function findDriveFile(token) {
-  const resp = await fetch(
-    `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name='${DRIVE_FILE_NAME}'&fields=files(id,name,modifiedTime)`,
-    { headers: { Authorization: `Bearer ${token}` } }
+
+async function findDriveFile() {
+  const q = encodeURIComponent(
+    `name='${DRIVE_FILE_NAME}' and 'appDataFolder' in parents and trashed=false`
   );
+
+
+  const resp = await driveFetch(
+    `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}&fields=files(id,name,modifiedTime)`
+  );
+
+
+  if (!resp.ok) {
+    let errText = "";
+    try {
+      errText = await resp.text();
+    } catch (_) {}
+    console.error("[Manga Tracker] findDriveFile 403 body:", errText);
+    throw new Error(`drive_find_failed_${resp.status}`);
+  }
+
+
   const data = await resp.json();
-  if (data.files && data.files.length > 0) return data.files[0];
-  return null;
+  return data.files?.[0] || null;
 }
 
-// Lit le contenu du fichier Drive
+
 async function readDriveFile(token, fileId) {
   const resp = await fetch(
     `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
-    { headers: { Authorization: `Bearer ${token}` } }
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json"
+      }
+    }
   );
-  if (!resp.ok) return null;
-  return await resp.json();
+
+
+  const raw = await resp.text();
+
+
+  if (!resp.ok) {
+    console.error("[Drive] read error", resp.status, raw);
+    throw new Error(`drive_read_${resp.status}`);
+  }
+
+
+  if (!raw || !raw.trim()) {
+    return null;
+  }
+
+
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("[Drive] invalid JSON:", raw);
+    throw new Error("invalid_remote_json");
+  }
 }
 
-// Upload / Mise à jour du fichier Drive
+
 async function writeDriveFile(token, fileId, data) {
-  const content = JSON.stringify(data, null, 2);
-  const metadata = { name: DRIVE_FILE_NAME, parents: fileId ? undefined : ['appDataFolder'] };
+  const metadata = fileId
+    ? { name: DRIVE_FILE_NAME }
+    : { name: DRIVE_FILE_NAME, parents: ["appDataFolder"] };
+
+
+  const json = JSON.stringify(data);
+  const boundary = "manga_tracker_boundary";
+
+
+  const body =
+    `--${boundary}\r\n` +
+    `Content-Type: application/json; charset=UTF-8\r\n\r\n` +
+    `${JSON.stringify(metadata)}\r\n` +
+    `--${boundary}\r\n` +
+    `Content-Type: application/json; charset=UTF-8\r\n\r\n` +
+    `${json}\r\n` +
+    `--${boundary}--`;
+
 
   const url = fileId
     ? `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`
     : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
 
-  const method = fileId ? 'PATCH' : 'POST';
 
-  const form = new FormData();
-  form.append('metadata', new Blob([JSON.stringify(fileId ? {} : metadata)], { type: 'application/json' }));
-  form.append('file', new Blob([content], { type: 'application/json' }));
+  const method = fileId ? "PATCH" : "POST";
+
 
   const resp = await fetch(url, {
     method,
-    headers: { Authorization: `Bearer ${token}` },
-    body: form
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": `multipart/related; boundary=${boundary}`
+    },
+    body
   });
-  return await resp.json();
-}
 
-// Merge intelligent de deux bases (local + drive)
-function mergeDBs(local, remote) {
-  const merged = { mangas: { ...local.mangas }, version: 1 };
 
-  for (const [key, remoteManga] of Object.entries(remote.mangas || {})) {
-    if (!merged.mangas[key]) {
-      merged.mangas[key] = remoteManga;
-    } else {
-      // Fusionner les chapitres lus (union des deux sets)
-      const localChapters = new Set(merged.mangas[key].chaptersRead);
-      const remoteChapters = new Set(remoteManga.chaptersRead || []);
-      const allChapters = [...new Set([...localChapters, ...remoteChapters])].sort((a, b) => a - b);
+  const raw = await resp.text();
 
-      merged.mangas[key].chaptersRead = allChapters;
-      merged.mangas[key].lastReadChapter = allChapters.length > 0 ? Math.max(...allChapters) : null;
 
-      // Garder le titre le plus récent / non-vide
-      if (!merged.mangas[key].title || merged.mangas[key].title === 'Manga inconnu') {
-        merged.mangas[key].title = remoteManga.title;
-      }
-
-      // Garder la date de dernière lecture la plus récente
-      if (remoteManga.lastReadAt && (!merged.mangas[key].lastReadAt ||
-        new Date(remoteManga.lastReadAt) > new Date(merged.mangas[key].lastReadAt))) {
-        merged.mangas[key].lastReadAt = remoteManga.lastReadAt;
-      }
-    }
+  if (!resp.ok) {
+    console.error("[Drive] write error", resp.status, raw);
+    throw new Error(`drive_write_${resp.status}`);
   }
 
-  merged.lastSync = new Date().toISOString();
+
+  return raw ? JSON.parse(raw) : { success: true };
+}
+
+
+// ───────── SYNC ─────────
+
+
+async function checkDriveAuth() {
+  const token = await getToken();
+  return {
+    connected: !!token
+  };
+}
+
+
+async function syncToDrive() {
+  const token = await getToken();
+  if (!token) return { success: false, reason: "not_connected" };
+
+
+  const db = await getDB();
+  if (!db || typeof db !== "object" || !db.mangas) {
+    return { success: false, reason: "invalid_local_db" };
+  }
+
+
+  const file = await findDriveFile();
+
+
+  if (file) {
+    await writeDriveFile(token, file.id, db);
+  } else {
+    await writeDriveFile(token, null, db);
+  }
+
+
+  return { success: true };
+}
+
+
+function mergeDBs(localDB, remoteDB) {
+  const merged = {
+    mangas: {},
+    settings: {
+      ...(remoteDB.settings || {}),
+      ...(localDB.settings || {})
+    },
+    lastSync: new Date().toISOString(),
+    version: Math.max(localDB.version || 1, remoteDB.version || 1)
+  };
+
+
+  const allKeys = new Set([
+    ...Object.keys(localDB.mangas || {}),
+    ...Object.keys(remoteDB.mangas || {})
+  ]);
+
+
+  for (const key of allKeys) {
+    const local = localDB.mangas?.[key];
+    const remote = remoteDB.mangas?.[key];
+
+
+    if (!local && remote) {
+      merged.mangas[key] = remote;
+      continue;
+    }
+
+
+    if (local && !remote) {
+      merged.mangas[key] = local;
+      continue;
+    }
+
+
+    const localChapters = Array.isArray(local.chaptersRead) ? local.chaptersRead : [];
+    const remoteChapters = Array.isArray(remote.chaptersRead) ? remote.chaptersRead : [];
+    const mergedChapters = [...new Set([...localChapters, ...remoteChapters])].sort((a, b) => a - b);
+
+
+    const localLast = local.lastReadAt ? new Date(local.lastReadAt).getTime() : 0;
+    const remoteLast = remote.lastReadAt ? new Date(remote.lastReadAt).getTime() : 0;
+    const newest = localLast >= remoteLast ? local : remote;
+
+
+    merged.mangas[key] = {
+      ...remote,
+      ...local,
+      ...newest,
+      chaptersRead: mergedChapters,
+      lastReadChapter: mergedChapters.length ? Math.max(...mergedChapters) : null,
+      lastReadAt: newest.lastReadAt || local.lastReadAt || remote.lastReadAt || null,
+      addedAt: local.addedAt || remote.addedAt || new Date().toISOString(),
+      notes: local.notes || remote.notes || "",
+      status: local.status || remote.status || "reading",
+      totalChapters: Math.max(local.totalChapters || 0, remote.totalChapters || 0) || null
+    };
+  }
+
+
   return merged;
 }
 
-async function syncToDrive() {
+
+async function syncWithDrive() {
   try {
-    let token;
-    try {
-      token = await getDriveToken();
-    } catch {
-      // Pas connecté → skip silencieusement
-      return { success: false, reason: 'non_authentifie' };
+    const token = await getToken();
+    if (!token) {
+      return { success: false, reason: "not_connected" };
     }
+
 
     const localDB = await getDB();
-    const existingFile = await findDriveFile(token);
+    const file = await findDriveFile();
 
-    if (existingFile) {
-      // Lire le fichier Drive et merger
-      const remoteDB = await readDriveFile(token, existingFile.id);
-      if (remoteDB) {
-        const merged = mergeDBs(localDB, remoteDB);
-        await saveDB(merged);
-        await writeDriveFile(token, existingFile.id, merged);
-      } else {
-        await writeDriveFile(token, existingFile.id, localDB);
-      }
-    } else {
-      // Premier upload
+
+    if (!file) {
       await writeDriveFile(token, null, localDB);
+      return {
+        success: true,
+        mode: "push_initial",
+        mangasCount: Object.keys(localDB.mangas || {}).length
+      };
     }
 
-    console.log('[Manga Tracker] ☁️ Sync Google Drive réussie');
-    return { success: true };
+
+    const remoteDB = await readDriveFile(token, file.id);
+
+
+    if (
+      !remoteDB ||
+      typeof remoteDB !== "object" ||
+      !remoteDB.mangas ||
+      typeof remoteDB.mangas !== "object"
+    ) {
+      await writeDriveFile(token, file.id, localDB);
+      return {
+        success: true,
+        mode: "rewrite_remote",
+        mangasCount: Object.keys(localDB.mangas || {}).length
+      };
+    }
+
+
+    const merged = mergeDBs(localDB, remoteDB);
+
+
+    await saveDB(merged);
+    await writeDriveFile(token, file.id, merged);
+    updateBadgeCount();
+
+
+    return {
+      success: true,
+      mode: "merged",
+      mangasCount: Object.keys(merged.mangas || {}).length
+    };
   } catch (err) {
-    console.error('[Manga Tracker] Erreur sync Drive:', err);
-    return { success: false, reason: err.message };
+    console.error("[Manga Tracker] syncWithDrive error:", err);
+    return { success: false, reason: err.message || "sync_failed" };
   }
 }
 
-// Sync depuis Drive vers local (utile au démarrage ou sur un nouvel appareil)
+
 async function syncFromDrive() {
   try {
-    const token = await getDriveTokenInteractive();
-    const existingFile = await findDriveFile(token);
-    if (!existingFile) {
-      return { success: false, reason: 'Aucun fichier Drive trouvé' };
+    const token = await getToken();
+    if (!token) return { success: false, reason: "not_connected" };
+
+
+    const file = await findDriveFile(token);
+    if (!file) return { success: false, reason: "no_file" };
+
+
+    const remoteDB = await readDriveFile(token, file.id);
+
+
+    if (!remoteDB) return { success: false, reason: "empty" };
+    if (!remoteDB.mangas || typeof remoteDB.mangas !== "object") {
+      return { success: false, reason: "invalid_remote_data" };
     }
 
-    const remoteDB = await readDriveFile(token, existingFile.id);
-    if (!remoteDB) return { success: false, reason: 'Fichier Drive vide' };
 
-    const localDB = await getDB();
-    const merged = mergeDBs(localDB, remoteDB);
-    await saveDB(merged);
+    await saveDB(remoteDB);
 
-    console.log('[Manga Tracker] ☁️ Import depuis Drive réussi');
-    return { success: true, mangasCount: Object.keys(merged.mangas).length };
+
+    return {
+      success: true,
+      mangasCount: Object.keys(remoteDB.mangas || {}).length,
+      mode: "replace_local"
+    };
   } catch (err) {
-    return { success: false, reason: err.message };
+    console.error("[Manga Tracker] syncFromDrive error:", err);
+    return { success: false, reason: err.message || "sync_from_drive_failed" };
   }
 }
 
-// ──────────────────────────────────────────────
-// LISTENER MESSAGES DEPUIS CONTENT.JS ET POPUP
-// ──────────────────────────────────────────────
 
+// ───────── MESSAGES ─────────
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // Ouvrir le popup sur le détail d'un manga spécifique
-  if (request.action === 'openPopupOnManga') {
-    const { slug, domain } = request.data;
-    // Stocker le manga à ouvrir, le popup le lira au démarrage
-    chrome.storage.local.set({ _openManga: { slug, domain, ts: Date.now() } }, () => {
-      chrome.action.openPopup().catch(() => {
-        // openPopup() peut échouer si déjà ouvert ou selon la version Chrome
-        // Dans ce cas on laisse juste le storage en place, l'utilisateur clique l'icône
+  (async () => {
+    if (request.action === "openPopupOnManga") {
+      const { slug, domain } = request.data || {};
+      await new Promise((resolve) => {
+        chrome.storage.local.set(
+          { _openManga: { slug, domain, ts: Date.now() } },
+          resolve
+        );
       });
-    });
-    sendResponse({ success: true });
-    return true;
-  }
 
-  const handlers = {
-    markAsRead: () => markAsRead(request.data),
-    getReadChapters: () => getReadChapters(request.data),
-    getAllMangas: () => getAllMangas(),
-    unmarkChapter: () => unmarkChapter(request.data),
-    deleteManga: () => deleteManga(request.data),
-    syncToDrive: () => syncToDrive(),
-    syncFromDrive: () => syncFromDrive(),
-    getSettings: () => getSettings(),
-    saveSettings: () => saveSettings(request.data),
-    // Mettre à jour statut, notes, totalChapters d'un manga
-    updateManga: async () => {
-      const db = await getDB();
-      const { mangaSlug, domain, ...fields } = request.data;
-      const key = getMangaKey(domain, mangaSlug);
-      if (!db.mangas[key]) return { success: false };
-      Object.assign(db.mangas[key], fields);
-      await saveDB(db);
-      scheduleDriveSync();
-      return { success: true };
-    },
-    // Marquer tous les chapitres jusqu'à X comme lus
-    markUpTo: async () => {
-      const { mangaSlug, domain, mangaTitle, upToChapter, allChapters } = request.data;
-      const db = await getDB();
-      const key = getMangaKey(domain, mangaSlug);
-      if (!db.mangas[key]) {
-        db.mangas[key] = {
-          slug: mangaSlug, title: mangaTitle, domain,
-          chaptersRead: [], totalChapters: null,
-          lastReadChapter: null, lastReadAt: null,
-          addedAt: new Date().toISOString(), status: 'reading', notes: ''
-        };
-      }
-      const toMark = allChapters.filter(c => c <= upToChapter);
-      const existing = new Set(db.mangas[key].chaptersRead);
-      toMark.forEach(c => existing.add(c));
-      db.mangas[key].chaptersRead = [...existing].sort((a,b) => a-b);
-      db.mangas[key].lastReadChapter = Math.max(...db.mangas[key].chaptersRead);
-      db.mangas[key].lastReadAt = new Date().toISOString();
-      await saveDB(db);
-      scheduleDriveSync();
-      updateBadgeCount();
-      return { success: true, count: toMark.length };
-    },
-    exportDB: async () => {
-      const db = await getDB();
-      return { success: true, data: db };
-    },
-    importDB: async () => {
-      await saveDB(request.data);
-      updateBadgeCount();
+
+      try {
+        await chrome.action.openPopup();
+      } catch (_) {}
+
+
       return { success: true };
     }
-  };
 
-  const handler = handlers[request.action];
-  if (handler) {
-    handler().then(sendResponse).catch(err => sendResponse({ success: false, error: err.message }));
-    return true; // Garder le canal ouvert pour la réponse async
-  }
+
+    const handlers = {
+      checkForExtensionUpdate: async () => checkForExtensionUpdate(),
+
+      getUpdateInfo: async () => {
+        const info = await getUpdateInfo();
+        return { success: true, info };
+      },
+
+      markAsRead: async () => {
+        const result = await markAsRead(request.data);
+        return result;
+      },
+
+
+      getReadChapters: async () => getReadChapters(request.data),
+
+
+      getAllMangas: async () => getAllMangas(),
+
+
+      unmarkChapter: async () => {
+        const result = await unmarkChapter(request.data);
+        return result;
+      },
+
+
+      deleteManga: async () => {
+        const result = await deleteManga(request.data);
+        return result;
+      },
+
+
+      getSettings: async () => getSettings(),
+
+
+      saveSettings: async () => saveSettings(request.data),
+
+
+      updateManga: async () => {
+        const db = await getDB();
+        const { mangaSlug, domain, ...fields } = request.data;
+        const key = getMangaKey(domain, mangaSlug);
+        if (!db.mangas[key]) return { success: false };
+        Object.assign(db.mangas[key], fields);
+        await saveDB(db);
+        scheduleDriveSync();
+        return { success: true };
+      },
+
+
+      markUpTo: async () => {
+        const { mangaSlug, domain, mangaTitle, upToChapter, allChapters } = request.data;
+        const db = await getDB();
+        const key = getMangaKey(domain, mangaSlug);
+
+
+        if (!db.mangas[key]) {
+          db.mangas[key] = {
+            slug: mangaSlug,
+            title: mangaTitle,
+            domain,
+            chaptersRead: [],
+            totalChapters: null,
+            lastReadChapter: null,
+            lastReadAt: null,
+            addedAt: new Date().toISOString(),
+            status: "reading",
+            notes: ""
+          };
+        }
+
+
+        const toMark = allChapters.filter(c => c <= upToChapter);
+        const existing = new Set(db.mangas[key].chaptersRead);
+        toMark.forEach(c => existing.add(c));
+
+
+        db.mangas[key].chaptersRead = [...existing].sort((a, b) => a - b);
+        db.mangas[key].lastReadChapter = Math.max(...db.mangas[key].chaptersRead);
+        db.mangas[key].lastReadAt = new Date().toISOString();
+
+
+        await saveDB(db);
+        scheduleDriveSync();
+        updateBadgeCount();
+
+
+        return { success: true, count: toMark.length };
+      },
+
+
+      exportDB: async () => {
+        const db = await getDB();
+        return { success: true, data: db };
+      },
+
+
+      importDB: async () => {
+        await saveDB(request.data);
+        updateBadgeCount();
+        return { success: true };
+      },
+
+
+      checkDriveAuth: async () => checkDriveAuth(),
+
+
+      storeToken: async () => {
+        const { accessToken, expiresIn } = request.data || {};
+        if (!accessToken) {
+          return { success: false, reason: "token_absent" };
+        }
+        await storeToken(accessToken, expiresIn || 3600);
+        return { success: true };
+      },
+
+
+      clearDriveToken: async () => {
+        await clearToken();
+        return { success: true };
+      },
+      syncToDrive: async () => syncToDrive(),
+      syncFromDrive: async () => syncFromDrive(),
+      syncWithDrive: async () => syncWithDrive()
+    };
+
+
+    const handler = handlers[request.action];
+
+
+    if (!handler) {
+      return { success: false, reason: "unknown_action" };
+    }
+
+
+    return await handler();
+  })()
+    .then(sendResponse)
+    .catch((err) => {
+      console.error("[Manga Tracker] onMessage error:", err);
+      sendResponse({ success: false, reason: err.message || "internal_error" });
+    });
+
+
+  return true;
 });
+
 
 // Sync au démarrage du service worker (nouvel appareil / redémarrage Chrome)
 // ──────────────────────────────────────────────
@@ -484,6 +1028,7 @@ async function updateBadgeCount() {
     m => m.status === 'reading' || !m.status
   ).length;
 
+
   if (reading === 0) {
     chrome.action.setBadgeText({ text: '' });
   } else {
@@ -492,12 +1037,17 @@ async function updateBadgeCount() {
   }
 }
 
+
 chrome.runtime.onStartup.addListener(() => {
   setTimeout(syncToDrive, 3000);
   setTimeout(updateBadgeCount, 1000);
+  setTimeout(() => {
+    checkForExtensionUpdate().catch(() => {});
+  }, 2000);
 });
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log('[Manga Tracker] Extension installée / mise à jour');
   updateBadgeCount();
+  checkForExtensionUpdate().catch(() => {});
 });

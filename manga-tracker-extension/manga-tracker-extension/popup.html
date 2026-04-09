@@ -31,11 +31,12 @@
           <path d="M18 2l2.2 2.8L18 7.6M6 16.4L3.8 19.2 6 22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
-      <button id="btn-settings" class="btn-icon" title="Paramètres">
+      <button id="btn-settings" class="btn-icon btn-icon-with-badge" title="Paramètres">
         <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
           <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
           <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
+        <span id="settings-update-badge" class="mini-now-badge hidden">NOW</span>
       </button>
     </div>
   </header>
@@ -173,6 +174,25 @@
         <button id="btn-import" class="btn-secondary">Importer (JSON)</button>
         <input type="file" id="import-file" accept=".json" style="display:none">
         <button id="btn-clear-all" class="btn-danger">Tout effacer</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3 class="section-title-with-badge">
+        <span>Mise à jour</span>
+        <span id="menu-update-badge" class="inline-now-badge hidden">NOW V.</span>
+      </h3>
+      <p class="settings-desc">Vérifie automatiquement si une nouvelle version est disponible sur GitHub.</p>
+
+      <div id="update-banner" class="update-banner hidden">
+        <div id="update-banner-text" class="settings-desc"></div>
+        <div class="settings-actions">
+          <button id="update-banner-download" class="btn-primary">Télécharger la mise à jour</button>
+        </div>
+      </div>
+
+      <div class="settings-actions">
+        <button id="btn-check-update" class="btn-secondary">Vérifier les mises à jour</button>
       </div>
     </div>
 

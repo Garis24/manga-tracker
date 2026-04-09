@@ -1,14 +1,16 @@
 {
   "manifest_version": 3,
   "name": "Manga Tracker",
-  "version": "1.2.4",
+  "version": "1.4.3",
   "key": "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC/aLEuY7tN8SeGLf/N6IyHvo6oH2bloe13r7crIQl+IhqKbp+Pbj2we0cOOF898HqkMrEIs1MXlOdYmvIZSFw9VplDvf9s0WLLHvsz3356dN+RfmbnnL6tBUi2S6jAfB7UEELcJOjTlVqnzJOpXCg9FXSGBRjEVk07xWSjzezFmfMuM2aw9YHhjCC8sl8N9nNUb5JEwZ0NvKLP48aNExCXoTW3Ut5DW9d/B8h7KEG2iK6apuRMx6EQli77CigVMm5a7W4Op4i8y3crLYTbWM0kycDfoNt0oe6ff1UHu9/4XbX69POeTYOA9EQ9uK+ij/sBx8QXAd4J9t0Sw4HIlvfxAgMBAAECggEAC34evVlRosFrDRxv8o4W+gOQDzordHg/iOMtDVLjfgZQL6WqwPLuk00jnA/4cACjbH56sLoLsCvJpEFRbgExQKGVfELJNmBwHSAUFy5BKtsfnV3IkfmQXVUm44Mxc7VAKJ19VjiFHkcmdVLMPuwAooJKR83AifFgm8kjXM59e/PCy4nm1Ko8JBbI4FAssIySfxDwZ9SpTHbSUj+3YyclkFIJ8VKSfeRPq6m1TiX2UkZYTMe37i4mSsHLD9qjXl7iPfkVZ05TBrXQ+iVBVEb/Gm32S3itdI+9JNZpwsPw3mL9kFFWONnz7JKWUQevFc6KjWsa04gGNqfGHajoVdpQAQKBgQDrNQe3QkgsgGXNL9lXvuGCm3PNm1JYLyckpmK0Mdtd+KsPQKkJQtbCc+ZT7pBpkGiwTyYEx/jkgKZJ0VCPQF94QczxG2Iuhi+SLHJDTVCdZk9qiqyyXb+SxL95Z/P5HkxApXBzPF0P46YNvNOqHkl0XnNWG4u9LPdVFHQAvrWFAQKBgQDQVHcxUI0kkMbCd2Am8dZ7g1kYNdLc9wmiQ6eb9fQv01vAoCLqYCquYor65s9fYyuZ51BsomdD0nwrk+r1/h5z7ZUccfR292I1ic8AqH0zGWxu1IhdkzIjWOyUDLS70+Wc7w8abPzTvBv++DWescZXBM7JR/p4pXCuOAPHHurC8QKBgQCC7W0THQlSBFMmycjhaDbd3iyzOg+3WOAgLaJqDgq/n4mRHvw5VIR5j8yZ0gV/TcyIwDY4mRw6DkcCdkqywzGhnnc3i3e20Ckw5B7iyenjBC2W8AS78SWPzIeNTElp1ey6W51h+CsRijZIFWF5pAxdg6oON50svBgduxnrxD0FAQKBgQC187+yg47yi7v85rRE712LvLlY6tGDCgQRA5PlJFikWK4/O92i5GECs7B82I/v2LahEaVtbB5S3whyKxvAw7SnPa7JDEIekYvmBLmV8pJ+ycqptdhwGfplYuolmD9V+QkHGsgPJXdgGmA9PV3ff5ciM2HD7Ki3LI+Qqf2qsLcLkQKBgDRgnGzf0zyYRl6A27zzBOYP9M24spjO+7Lm5a1/ca+z6iIyjwzZ5UhEHczszoU5APE0RGkD+E1q6ed6FTBsnqszR7Brh4xTyPmsA1zNrcJiBaPG8MRMw4EB6hY3MAySSscxORg9zNLBV97Lg8SWTSBGChueFsmfdgPDMoCBoWdC",
   "description": "Suivi de lecture manga sur tous les sites de scans",
   "permissions": [
     "storage",
     "identity",
     "tabs",
-    "activeTab"
+    "activeTab",
+    "alarms",
+    "notifications"
   ],
   "host_permissions": [
     "<all_urls>"
