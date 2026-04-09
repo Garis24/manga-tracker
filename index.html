@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manga Tracker est une extension Chrome qui suit automatiquement votre progression de lecture manga, pensée pour être compatible avec n’importe quel site de lecture manga, avec synchronisation Google Drive et usage mobile testé sur Kiwi Browser.">
   <title>Manga Tracker — Extension Chrome</title>
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="alternate icon" href="icons/icon16.jpg" type="image/jpeg">
@@ -14,9 +15,9 @@
       background: #0f1117;
       color: #e8eaf6;
       min-height: 100vh;
+      line-height: 1.55;
     }
-
-    /* ── HEADER ── */
+    a { color: inherit; }
     header {
       padding: 56px 24px 40px;
       text-align: center;
@@ -36,6 +37,8 @@
       align-items: center;
       gap: 16px;
       margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
     }
     .logo-icon {
       width: 56px; height: 56px;
@@ -45,14 +48,14 @@
       flex-shrink: 0;
     }
     .logo-icon svg { width: 100%; height: 100%; display: block; }
-    h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; }
+    h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; position: relative; z-index: 1; }
     .subtitle {
       color: #7b82a6; margin-top: 10px; font-size: 1rem;
-      max-width: 480px; margin-inline: auto; line-height: 1.5;
+      max-width: 680px; margin-inline: auto; line-height: 1.6; position: relative; z-index: 1;
     }
     .header-badges {
       display: flex; gap: 10px; justify-content: center;
-      margin-top: 20px; flex-wrap: wrap;
+      margin-top: 20px; flex-wrap: wrap; position: relative; z-index: 1;
     }
     .badge {
       display: inline-flex; align-items: center; gap: 6px;
@@ -60,18 +63,14 @@
       border-radius: 20px; padding: 5px 12px; font-size: 0.78rem; color: #9ba3bf;
     }
     .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
-
-    /* ── MAIN ── */
-    main { max-width: 800px; margin: 0 auto; padding: 52px 24px; }
-
-    /* ── PREVIEW ── */
+    main { max-width: 860px; margin: 0 auto; padding: 52px 24px; }
     .preview-section {
       display: flex; align-items: center; gap: 32px;
       margin-bottom: 52px; flex-wrap: wrap;
     }
     .preview-text { flex: 1; min-width: 220px; }
     .preview-text h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; color: #e8eaf6; }
-    .preview-text p  { font-size: 0.9rem; color: #7b82a6; line-height: 1.65; }
+    .preview-text p { font-size: 0.92rem; color: #7b82a6; line-height: 1.68; }
     .preview-mockup {
       width: 200px; flex-shrink: 0; background: #1a1d2e;
       border-radius: 14px; border: 1px solid rgba(255,255,255,0.08);
@@ -101,7 +100,7 @@
     }
     .mock-text { flex: 1; }
     .mock-manga-name { font-size: 0.65rem; color: #c5c8e0; font-weight: 600; display: block; }
-    .mock-chapter    { font-size: 0.58rem; color: #5a5f7a; }
+    .mock-chapter { font-size: 0.58rem; color: #5a5f7a; }
     .mock-footer {
       background: #141624; padding: 8px 14px;
       display: flex; align-items: center; justify-content: space-between;
@@ -114,8 +113,6 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 0.65rem; color: #9ba3bf; font-weight: 700;
     }
-
-    /* ── FEATURES ── */
     .section-label {
       text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.7rem;
       color: #6366f1; font-weight: 600; margin-bottom: 16px;
@@ -132,20 +129,17 @@
     .feature:hover { border-color: rgba(99,102,241,0.3); transform: translateY(-2px); }
     .feature-icon { font-size: 1.4rem; margin-bottom: 10px; }
     .feature h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #d0d3f0; }
-    .feature p  { font-size: 0.82rem; color: #7b82a6; line-height: 1.55; }
-
-    /* ── CTA BLOCKS ── */
+    .feature p { font-size: 0.82rem; color: #7b82a6; line-height: 1.55; }
     .cta-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 16px; margin-bottom: 40px;
     }
     .cta { text-align: center; padding: 28px 28px 24px; border-radius: 14px; border: 1px solid rgba(99,102,241,0.2); }
     .cta-install { background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(34,197,94,0.07)); }
-    .cta-soon    { background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(99,102,241,0.06)); border-color: rgba(34,197,94,0.2); }
+    .cta-soon { background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(99,102,241,0.06)); border-color: rgba(34,197,94,0.2); }
     .cta-support { background: linear-gradient(135deg, rgba(249,168,37,0.07), rgba(99,102,241,0.07)); border-color: rgba(249,168,37,0.2); grid-column: 1 / -1; }
     .cta h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
-    .cta p  { color: #7b82a6; font-size: 0.87rem; margin-bottom: 18px; line-height: 1.5; }
-
+    .cta p { color: #7b82a6; font-size: 0.87rem; margin-bottom: 18px; line-height: 1.55; }
     .coming-badge {
       display: inline-flex; align-items: center; gap: 6px;
       background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25);
@@ -154,25 +148,22 @@
     }
     .coming-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; animation: pulse 1.6s ease-in-out infinite; }
     @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-
     .play-store-visual {
       display: flex; align-items: center; justify-content: center;
       gap: 10px; margin-bottom: 14px; opacity: 0.75;
     }
     .play-icon { width: 40px; height: 40px; }
-
     .support-cards {
       display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 4px;
     }
     .support-card {
       background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
       border-radius: 10px; padding: 14px 20px; text-align: center;
-      min-width: 180px; flex: 1; max-width: 220px;
+      min-width: 180px; flex: 1; max-width: 240px;
     }
     .support-card-icon { font-size: 1.5rem; margin-bottom: 8px; }
     .support-card h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: #d0d3f0; }
-    .support-card p  { font-size: 0.78rem; color: #7b82a6; line-height: 1.45; }
-
+    .support-card p { font-size: 0.78rem; color: #7b82a6; line-height: 1.45; }
     .btn {
       display: inline-block; color: white; padding: 10px 22px;
       border-radius: 8px; text-decoration: none; font-weight: 600;
@@ -181,15 +172,10 @@
     .btn:hover { transform: translateY(-1px); }
     .btn-primary { background: #6366f1; }
     .btn-primary:hover { background: #4f52d8; }
-    .btn-green   { background: #16a34a; }
-    .btn-green:hover   { background: #15803d; }
-    .btn-amber   { background: #d97706; }
-    .btn-amber:hover   { background: #b45309; }
-    .btn-outline {
-      background: transparent; border: 1.5px solid rgba(255,255,255,0.2); color: #c5c8e0;
-    }
-    .btn-outline:hover { border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.04); }
-
+    .btn-green { background: #16a34a; }
+    .btn-green:hover { background: #15803d; }
+    .btn-amber { background: #d97706; }
+    .btn-amber:hover { background: #b45309; }
     .bug-hint {
       display: inline-flex; align-items: center; gap: 8px;
       margin-top: 10px; font-size: 0.8rem; color: #5a5f7a;
@@ -200,19 +186,6 @@
       border: 1.5px solid rgba(255,255,255,0.25);
       font-size: 0.72rem; color: #9ba3bf; font-weight: 700; flex-shrink: 0;
     }
-
-    footer {
-      text-align: center; padding: 24px; color: #7b82a6;
-      font-size: 0.78rem; border-top: 1px solid rgba(255,255,255,0.06);
-    }
-    footer a { color: #6366f1; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-
-    @media (max-width: 500px) {
-      h1 { font-size: 1.6rem; }
-      .preview-section { gap: 20px; }
-      .cta-support { grid-column: unset; }
-    }
     .install-tuto {
       margin-top: 18px;
       text-align: left;
@@ -221,7 +194,6 @@
       border-radius: 10px;
       overflow: hidden;
     }
-
     .install-tuto-toggle {
       width: 100%;
       display: flex;
@@ -237,39 +209,20 @@
       cursor: pointer;
       text-align: left;
     }
-
-    .install-tuto-toggle:hover {
-      background: rgba(255,255,255,0.03);
-    }
-
+    .install-tuto-toggle:hover { background: rgba(255,255,255,0.03); }
     .install-tuto-arrow {
       color: #9ba3bf;
       font-size: 1rem;
       transition: transform 0.2s ease;
       flex-shrink: 0;
     }
-
-    .install-tuto-toggle[aria-expanded="true"] .install-tuto-arrow {
-      transform: rotate(180deg);
-    }
-
+    .install-tuto-toggle[aria-expanded="true"] .install-tuto-arrow { transform: rotate(180deg); }
     .install-tuto-content {
       padding: 0 18px 16px;
       border-top: 1px solid rgba(255,255,255,0.06);
     }
-
-    .install-tuto ol {
-      margin: 14px 0 0;
-      padding-left: 18px;
-      color: #a8afc9;
-    }
-
-    .install-tuto li {
-      font-size: 0.83rem;
-      line-height: 1.6;
-      margin-bottom: 6px;
-    }
-
+    .install-tuto ol { margin: 14px 0 0; padding-left: 18px; color: #a8afc9; }
+    .install-tuto li { font-size: 0.83rem; line-height: 1.6; margin-bottom: 6px; }
     .install-tuto code {
       background: rgba(99,102,241,0.12);
       color: #cfd2ff;
@@ -288,14 +241,38 @@
       font-size: 0.82rem;
       cursor: pointer;
     }
-
-    .chrome-link-btn:hover {
-      background: rgba(99,102,241,0.2);
+    .chrome-link-btn:hover { background: rgba(99,102,241,0.2); }
+    .small-note {
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: #9ba3bf;
+      line-height: 1.6;
+    }
+    .update-note {
+      margin-top: 18px;
+      padding: 14px 16px;
+      text-align: left;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      color: #a8afc9;
+      font-size: 0.83rem;
+      line-height: 1.6;
+    }
+    footer {
+      text-align: center; padding: 24px; color: #7b82a6;
+      font-size: 0.78rem; border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    footer a { color: #6366f1; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    @media (max-width: 500px) {
+      h1 { font-size: 1.6rem; }
+      .preview-section { gap: 20px; }
+      .cta-support { grid-column: unset; }
     }
   </style>
 </head>
 <body>
-
   <header>
     <div class="logo">
       <div class="logo-icon">
@@ -312,23 +289,22 @@
       </div>
       <h1>Manga Tracker</h1>
     </div>
-    <p class="subtitle">Extension Chrome &mdash; Suivi de lecture manga sur tous les sites de scans</p>
+    <p class="subtitle">Extension Chrome pensée pour suivre automatiquement votre progression manga. Le projet se veut compatible avec n’importe quel site de lecture manga, avec synchronisation Google Drive et prise en charge mobile testée sur Kiwi Browser.</p>
     <div class="header-badges">
       <span class="badge"><span class="badge-dot"></span>Gratuit &amp; Open-source</span>
-      <span class="badge">&#128218; Multi-sites</span>
-      <span class="badge">&#9729;&#65039; Google Drive Sync</span>
-      <span class="badge">&#128274; Données privées</span>
+      <span class="badge">📚 Compatible avec le plus de sites possible</span>
+      <span class="badge">☁️ Google Drive Sync</span>
+      <span class="badge">📱 Testé sur Kiwi Browser</span>
     </div>
   </header>
 
   <main>
-
-    <!-- APERÇU VISUEL DE L'EXTENSION -->
     <div class="preview-section">
       <div class="preview-text">
         <p class="section-label">Aperçu de l'extension</p>
         <h2>Votre lecture sauvegardée,<br>site après site</h2>
         <p>Que vous changiez de site, de manga ou d'appareil, Manga Tracker garde votre progression à jour automatiquement. Vous reprenez votre lecture exactement au bon chapitre, sans avoir à chercher où vous en étiez.</p>
+        <p class="small-note">Le projet vise une compatibilité aussi large que possible avec les sites de lecture manga, pour offrir un suivi simple et universel.</p>
       </div>
       <div class="preview-mockup">
         <div class="mock-header">
@@ -349,105 +325,87 @@
             <span class="mock-green-dot"></span>
             <div class="mock-text">
               <span class="mock-manga-name">Solo Leveling</span>
-              <span class="mock-chapter">Chap. 201 &middot; Lu</span>
+              <span class="mock-chapter">Chap. 201 · Lu</span>
             </div>
           </div>
           <div class="mock-manga-row">
             <span class="mock-green-dot"></span>
             <div class="mock-text">
               <span class="mock-manga-name">Jujutsu Kaisen</span>
-              <span class="mock-chapter">Chap. 264 &middot; Lu</span>
+              <span class="mock-chapter">Chap. 264 · Lu</span>
             </div>
           </div>
           <div class="mock-manga-row">
             <span class="mock-gray-dot"></span>
             <div class="mock-text">
               <span class="mock-manga-name">Berserk</span>
-              <span class="mock-chapter">Chap. 374 &middot; À lire</span>
+              <span class="mock-chapter">Chap. 374 · À lire</span>
             </div>
           </div>
           <div class="mock-manga-row">
             <span class="mock-green-dot"></span>
             <div class="mock-text">
               <span class="mock-manga-name">Chainsaw Man</span>
-              <span class="mock-chapter">Chap. 170 &middot; Lu</span>
+              <span class="mock-chapter">Chap. 170 · Lu</span>
             </div>
           </div>
         </div>
         <div class="mock-footer">
-          <span class="mock-btn">&#9881; Sync Drive</span>
+          <span class="mock-btn">⚙ Sync Drive</span>
           <span class="mock-exclaim">!</span>
         </div>
       </div>
     </div>
 
-    <!-- FONCTIONNALITÉS -->
     <p class="section-label">Fonctionnalités</p>
-
     <div class="features">
       <div class="feature">
-        <div class="feature-icon">&#128994;</div>
+        <div class="feature-icon">🟢</div>
         <h3>Repérage automatique</h3>
         <p>Les chapitres déjà lus sont identifiés visuellement pour vous permettre de reprendre votre lecture en un coup d'œil.</p>
       </div>
-
       <div class="feature">
-        <div class="feature-icon">&#128214;</div>
+        <div class="feature-icon">📖</div>
         <h3>Sauvegarde auto</h3>
         <p>Votre progression est enregistrée automatiquement dès l'ouverture d'un chapitre, sans action manuelle.</p>
       </div>
-
       <div class="feature">
-        <div class="feature-icon">&#9729;&#65039;</div>
+        <div class="feature-icon">☁️</div>
         <h3>Sync Google Drive</h3>
-        <p>Votre bibliothèque et votre avancement restent synchronisés sur tous vos appareils via Google Drive.</p>
+        <p>Votre bibliothèque et votre avancement restent synchronisés sur vos appareils via Google Drive.</p>
       </div>
-
       <div class="feature">
-        <div class="feature-icon">&#127760;</div>
-        <h3>Multi-sites</h3>
-        <p>Suivez vos mangas sur plusieurs sites compatibles sans perdre l'endroit où vous vous êtes arrêté.</p>
+        <div class="feature-icon">🌐</div>
+        <h3>Compatibilité large</h3>
+        <p>Le projet se veut compatible avec n’importe quel site de lecture manga pour garder un suivi aussi universel que possible.</p>
       </div>
-
       <div class="feature">
-        <div class="feature-icon">&#128202;</div>
-        <h3>Suivi complet</h3>
-        <p>Consultez votre progression, définissez un statut et organisez facilement votre bibliothèque manga.</p>
+        <div class="feature-icon">📱</div>
+        <h3>Mobile compatible</h3>
+        <p>L’utilisation mobile a aussi été testée sur Kiwi Browser pour proposer une expérience plus souple sur Android.</p>
       </div>
-
       <div class="feature">
-        <div class="feature-icon">&#9875;&#65039;</div>
-        <h3>Accès rapide</h3>
-        <p>Ouvrez l'extension à tout moment avec le raccourci Alt+M pour retrouver instantanément vos mangas.</p>
+        <div class="feature-icon">⬆️</div>
+        <h3>Mises à jour</h3>
+        <p>Une notification peut prévenir lorsqu’une nouvelle version est disponible, pratique tant que l’installation se fait hors Chrome Web Store.</p>
       </div>
     </div>
 
-    <!-- BLOCS CTA -->
     <div class="cta-grid">
-
-      <!-- CTA 1 : Installer Chrome -->
       <div class="cta cta-install">
-        <h2>&#128279; Installer l'extension</h2>
+        <h2>🔗 Installer l'extension</h2>
         <p>Disponible en chargement local via le mode développeur Chrome.</p>
-        <a href="https://download-directory.github.io/?url=https://github.com/Garis24/manga-tracker/tree/main/manga-tracker-extension&filename=manga-tracker-extension.zip" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Télécharger l'extension
-        </a>
+        <a href="https://download-directory.github.io/?url=https://github.com/Garis24/manga-tracker/tree/main/manga-tracker-extension&filename=manga-tracker-extension.zip" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Télécharger l'extension</a>
         <div class="install-tuto">
           <button class="install-tuto-toggle" type="button" aria-expanded="false" onclick="toggleInstallTuto(this)">
             <span>📘 Tuto simple : comment l’installer</span>
             <span class="install-tuto-arrow">▾</span>
           </button>
-
           <div class="install-tuto-content" hidden>
             <ol>
               <li>Téléchargez le fichier ZIP.</li>
               <li>Extrayez le dossier <strong>manga-tracker-extension</strong> à l’endroit où vous voulez le conserver.</li>
-              <li>Ouvrez Chrome puis allez sur <button type="button" class="chrome-link-btn" onclick="copyChromeExtensionsUrl()">chrome://extensions/</button>
-                <span id="copy-feedback" style="display:none; margin-left:8px; color:#22c55e;">
-                  Copié !
-                </span>
-              </li>
+              <li>Ouvrez Chrome puis allez sur <button type="button" class="chrome-link-btn" onclick="copyChromeExtensionsUrl()">chrome://extensions/</button> <span id="copy-feedback" style="display:none; margin-left:8px; color:#22c55e;">Copié !</span></li>
               <li>Activez le <strong>Mode développeur</strong> en haut à droite.</li>
               <li>Cliquez sur <strong>Charger l’extension non empaquetée</strong>.</li>
               <li>Sélectionnez le dossier <strong>manga-tracker-extension</strong>.</li>
@@ -455,52 +413,45 @@
             </ol>
           </div>
         </div>
+        <div class="update-note">Après installation, une alerte de nouvelle version peut aider à savoir quand mettre à jour l’extension si vous l’utilisez encore en mode développeur.</div>
       </div>
 
-      <!-- CTA 2 : Bientôt sur Google Play -->
       <div class="cta cta-soon">
         <div class="coming-badge">
           <span class="coming-dot"></span>
           Bientôt disponible
         </div>
         <div class="play-store-visual">
-          <img class="play-icon" src="https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg" alt="" width="40" height="40" loading="lazy">
+          <img class="play-icon" src="https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg" alt="Logo Chrome Web Store" width="40" height="40" loading="lazy">
           <span style="font-size:1rem;color:#d0d3f0;font-weight:700;">Chrome Web Store</span>
         </div>
         <h2>Bientôt sur le Chrome Web Store</h2>
-        <p>Une version publique est prévue pour le Chrome Web Store afin d'installer l'extension plus facilement, sans passer par le mode développeur.</p>
+        <p>Une version publique est prévue pour simplifier l’installation, éviter le mode développeur et rendre les mises à jour plus naturelles.</p>
       </div>
 
-      <!-- CTA 3 : Nous soutenir -->
       <div class="cta cta-support">
-        <h2>&#128155; Soutenir le projet</h2>
-        <p>Manga Tracker est gratuit et open-source. Si vous l'appréciez, voici comment nous aider :</p>
+        <h2>💛 Soutenir le projet</h2>
+        <p>Manga Tracker est gratuit et open-source. Si vous l'appréciez, voici comment aider le projet à continuer d’évoluer.</p>
         <div class="support-cards">
-
           <div class="support-card">
-            <div class="support-card-icon">&#128176;</div>
+            <div class="support-card-icon">💰</div>
             <h3>Soutien financier</h3>
-            <p>Un don, même petit, nous aide à maintenir et améliorer l'extension activement.</p>
+            <p>Un don aide à améliorer l’extension, sa compatibilité et ses futures versions.</p>
             <br>
-            <a href="https://www.paypal.com/paypalme/GarisSellier" class="btn btn-amber" target="_blank" rel="noopener noreferrer" style="font-size:0.82rem;padding:8px 18px;">
-              Faire un don &#9749;
-            </a>
+            <a href="https://www.paypal.com/paypalme/GarisSellier" class="btn btn-amber" target="_blank" rel="noopener noreferrer" style="font-size:0.82rem;padding:8px 18px;">Faire un don ☕</a>
           </div>
-
           <div class="support-card">
-            <div class="support-card-icon">&#128027;</div>
+            <div class="support-card-icon">🐞</div>
             <h3>Signaler un bug</h3>
-            <p>Vous avez trouvé un problème ? Signalez-le via le bouton dans l'extension.</p>
+            <p>Vous avez trouvé un problème ? Signalez-le directement depuis le bouton intégré au popup de l’extension.</p>
             <br>
             <div class="bug-hint" style="justify-content:center;margin-bottom:10px;">
               <span class="bug-exclaim-inline">!</span>
               <span>Cliquez sur <strong style="color:#c5c8e0;">!</strong> dans le popup de l'extension</span>
             </div>
           </div>
-
         </div>
       </div>
-
     </div>
   </main>
 
@@ -511,22 +462,21 @@
   </footer>
 
   <script>
-  function toggleInstallTuto(button) {
-    const content = button.nextElementSibling;
-    const isOpen = button.getAttribute('aria-expanded') === 'true';
-
-    button.setAttribute('aria-expanded', String(!isOpen));
-    content.hidden = isOpen;
-  }
-  function copyChromeExtensionsUrl() {
-    navigator.clipboard.writeText('chrome://extensions/').then(() => {
-      const feedback = document.getElementById('copy-feedback');
-      feedback.style.display = 'inline';
-      setTimeout(() => {
-        feedback.style.display = 'none';
-      }, 2000);
-    });
-  }
+    function toggleInstallTuto(button) {
+      const content = button.nextElementSibling;
+      const isOpen = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!isOpen));
+      content.hidden = isOpen;
+    }
+    function copyChromeExtensionsUrl() {
+      navigator.clipboard.writeText('chrome://extensions/').then(() => {
+        const feedback = document.getElementById('copy-feedback');
+        feedback.style.display = 'inline';
+        setTimeout(() => {
+          feedback.style.display = 'none';
+        }, 2000);
+      });
+    }
   </script>
 </body>
 </html>
