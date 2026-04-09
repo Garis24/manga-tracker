@@ -1,121 +1,95 @@
-# Manga Tracker — Extension Chrome
+# Manga Tracker — suivez automatiquement votre lecture manga
 
-Suit automatiquement ta progression de lecture manga sur **tous les sites de scans**, avec synchronisation **Google Drive gratuite** entre tes appareils.
+**Manga Tracker** est une extension Chrome conçue pour enregistrer automatiquement votre progression de lecture manga. Le projet se veut compatible avec n’importe quel site de lecture manga, afin de vous permettre de reprendre exactement au bon chapitre, sans suivi manuel.
 
----
+🌐 **Site officiel :** https://garis24.github.io/manga-tracker/
+
+***
+
+## Présentation du projet
+
+Quand on lit des mangas sur plusieurs sites, il devient vite difficile de se souvenir du dernier chapitre lu, surtout quand on alterne entre plusieurs séries. Manga Tracker résout ce problème en suivant votre lecture automatiquement et en affichant visuellement les chapitres déjà lus directement sur les pages des mangas.
+
+Le projet a été pensé pour être simple à utiliser au quotidien : vous l’installez dans Chrome, vous lisez normalement sur vos sites habituels, et l’extension s’occupe du reste. Elle peut aussi synchroniser votre bibliothèque via Google Drive pour retrouver votre progression sur plusieurs appareils.
+
+## Pourquoi utiliser Manga Tracker
+
+Manga Tracker permet de :
+
+- reprendre immédiatement votre lecture au bon endroit ;
+- éviter de relire ou de chercher le dernier chapitre lu ;
+- suivre plusieurs mangas sur plusieurs sites compatibles ;
+- garder votre progression même après un changement de navigateur ou de PC ;
+- organiser plus facilement votre bibliothèque de lecture.
 
 ## Fonctionnalités
 
-- ✅ Enregistrement automatique quand tu lis un chapitre
-- 🟢 Cercle vert sur les chapitres déjà lus (page de liste du manga)
-- 📱 Sync Google Drive (dossier caché `appData`, gratuit, 100 MB)
-- 🔍 Recherche dans ta bibliothèque
-- 📤 Export/Import JSON
-- Fonctionne sur Raijin-scans, Scan-vf, Lelscans, Mangadex, et tous les sites Madara/WordPress
-
----
+- **Sauvegarde automatique** de votre progression dès l’ouverture d’un chapitre.
+- **Repérage visuel** des chapitres déjà lus sur la page du manga.
+- **Compatibilité multi-sites** pour continuer une lecture sans perdre votre suivi.
+- **Synchronisation Google Drive** pour retrouver vos données sur plusieurs appareils.
+- **Bibliothèque intégrée** pour consulter votre avancement et organiser vos lectures.
+- **Accès rapide** au popup avec le raccourci clavier **Alt+M**.
 
 ## Installation
 
-### 1. Télécharger l'extension
-Décompresse le dossier `manga-tracker-extension/` sur ton PC.
+### 1. Télécharger l’extension
 
-### 2. Créer le client Google OAuth (pour la sync Drive)
+Téléchargez l’archive du projet puis extrayez le dossier `manga-tracker-extension` à l’emplacement de votre choix sur votre ordinateur.
 
-> Si tu ne veux pas la sync Drive, passe cette étape.
+### 2. Charger l’extension dans Chrome
 
-1. Va sur [Google Cloud Console](https://console.cloud.google.com/)
-2. Crée un **nouveau projet** (ex: "MangaTracker")
-3. Dans **API & Services → Bibliothèque** : active **Google Drive API**
-4. Dans **API & Services → Identifiants** :
-   - Clique **Créer des identifiants → ID client OAuth 2.0**
-   - Type : **Extension Chrome**
-   - Dans "ID d'application" : colle l'ID de ton extension (visible dans `chrome://extensions` après chargement)
-   - Valide
-5. Copie le **Client ID** généré (format `XXXXXXX.apps.googleusercontent.com`)
-6. Ouvre `manifest.json` et remplace :
-   ```json
-   "client_id": "VOTRE_CLIENT_ID_GOOGLE.apps.googleusercontent.com"
-   ```
-   par ton vrai Client ID.
-
-### 3. Charger l'extension dans Chrome
-
-1. Va sur `chrome://extensions`
-2. Active le **Mode développeur** (coin supérieur droit)
-3. Clique **Charger l'extension non empaquetée**
-4. Sélectionne le dossier `manga-tracker-extension/`
-
----
+1. Ouvrez Chrome.
+2. Rendez-vous sur `chrome://extensions`.
+3. Activez le **Mode développeur** en haut à droite.
+4. Cliquez sur **Charger l’extension non empaquetée**.
+5. Sélectionnez le dossier `manga-tracker-extension`.
+6. Épinglez l’extension dans la barre Chrome pour y accéder plus facilement.
 
 ## Utilisation
 
 ### Lire un chapitre
-Navigue simplement sur n'importe quel site de scan → le chapitre est automatiquement enregistré.
 
-### Voir les chapitres lus
-Va sur la page du manga (ex: `https://raijin-scans.fr/manga/enigmatica/`) → les chapitres lus affichent un **point vert** à côté.
+Ouvrez simplement un chapitre sur un site compatible. L’extension détecte la lecture et enregistre automatiquement votre progression.
 
-### Popup
-Clique sur l'icône de l'extension pour :
-- Voir le chapitre en cours et le marquer lu/non lu
-- Parcourir ta bibliothèque
-- Synchroniser avec Google Drive
+### Revoir les chapitres déjà lus
 
----
+Sur la page d’un manga, les chapitres déjà consultés sont marqués visuellement pour que vous puissiez reprendre votre lecture en un coup d’œil.
 
-## Synchronisation entre appareils (Google Drive)
+### Ouvrir votre bibliothèque
 
-La sync utilise le **dossier `appData` de Google Drive** :
-- Invisible dans ton Drive (ne pollue pas tes fichiers)
-- Gratuit (compte dans ta limite de 15 GB)
-- Fusionne intelligemment les données des deux appareils
+Cliquez sur l’icône de l’extension dans Chrome ou utilisez le raccourci **Alt+M** pour afficher votre bibliothèque, consulter votre progression et accéder aux actions principales.
 
-### Activer la sync
-1. Ouvre le popup → icône ⚙️ Paramètres
-2. Clique **Connecter Google Drive**
-3. Accepte les permissions
-4. C'est tout — la sync se fait automatiquement après chaque lecture
+## Synchronisation entre appareils
 
-### Sur un nouvel appareil
-1. Installe l'extension
-2. Paramètres → **Importer depuis Drive**
-3. Tout ton historique est restauré
+Manga Tracker peut synchroniser votre progression avec **Google Drive** afin de retrouver votre bibliothèque sur plusieurs ordinateurs.
 
----
+### Activer la synchronisation
+
+1. Ouvrez le popup de l’extension.
+2. Accédez aux paramètres.
+3. Connectez votre compte Google.
+4. Autorisez l’accès à Google Drive.
+
+Une fois la synchronisation activée, votre progression peut être restaurée sur un autre appareil après installation de l’extension.
 
 ## Sites compatibles
 
-L'extension détecte automatiquement les URLs de type :
-- `/manga/<slug>/chapitre-X/`
-- `/manga/<slug>/chapter-X/`
-- `/read/<slug>/ch-X/`
-- Et de nombreuses variantes
+Manga Tracker est un projet qui se veut compatible avec n’importe quel site de lecture manga.
 
-Testé sur : Raijin-scans, Scan-VF, Lel-scans, MangaDex, MangaFire, Asura Scans, Flame Scans, et tout site basé sur **Madara (WordPress)**.
+L’objectif est de permettre un suivi de lecture aussi universel que possible, afin que vous puissiez garder votre progression, même en changeant de site, de série ou d’appareil.
 
----
+La compatibilité continue d’évoluer pour prendre en charge un maximum de structures et de lecteurs différents.
 
-## Structure des fichiers
+## Installation future
 
-```
-manga-tracker-extension/
-├── manifest.json      — Config Manifest V3
-├── content.js         — Détection page + badges verts
-├── background.js      — Stockage + sync Google Drive
-├── popup.html         — Interface utilisateur
-├── popup.css          — Style
-├── popup.js           — Logique popup
-└── icons/             — Icônes (à ajouter)
-```
+Le projet indique aussi qu’une version publique sur le **Chrome Web Store** est prévue à l’avenir afin de simplifier encore l’installation.
 
----
+## Support et retours
 
-## Icônes
+Manga Tracker est un projet gratuit et open-source. Si vous appréciez l’extension, vous pouvez soutenir son développement ou signaler les bugs directement depuis l’interface prévue dans l’extension.
 
-Place des icônes PNG dans le dossier `icons/` :
-- `icon16.png` (16×16)
-- `icon48.png` (48×48)
-- `icon128.png` (128×128)
+***
 
-Tu peux utiliser un emoji 📚 converti en PNG via [favicon.io](https://favicon.io/emoji-favicons/).
+Pour plus d’informations, captures, explications et mises à jour du projet, consultez le site officiel :  
+**https://garis24.github.io/manga-tracker/**
