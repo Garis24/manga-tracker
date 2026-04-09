@@ -30,6 +30,7 @@ Manga Tracker permet de :
 - **Synchronisation Google Drive** pour retrouver vos données sur plusieurs appareils.
 - **Bibliothèque intégrée** pour consulter votre avancement et organiser vos lectures.
 - **Accès rapide** au popup avec le raccourci clavier **Alt+M**.
+- **Vérification auto mise à jour** vous notifiera si une nouvelle maj est disponible au téléchargement.
 
 ## Installation
 
