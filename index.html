@@ -270,6 +270,16 @@
       .preview-section { gap: 20px; }
       .cta-support { grid-column: unset; }
     }
+    .btn-discord {
+      background: linear-gradient(135deg, #5865F2, #4752C4);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .btn-discord:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 <body>
@@ -434,12 +444,21 @@
         <p>Manga Tracker est gratuit et open-source. Si vous l'appréciez, voici comment aider le projet à continuer d’évoluer.</p>
         <div class="support-cards">
           <div class="support-card">
+            <div class="support-card-icon">💬</div>
+            <h3>Rejoindre le Discord</h3>
+            <p>Rejoignez la communauté pour proposer des idées, suivre les mises à jour, découvrir les nouvelles fonctionnalités et échanger autour du projet.</p>
+            <br>
+            <a href="https://discord.gg/Tef2uFXFC6" class="btn btn-discord" target="_blank" rel="noopener noreferrer" style="font-size:0.82rem;padding:8px 18px;">Rejoindre le Discord</a>
+          </div>
+
+          <div class="support-card">
             <div class="support-card-icon">💰</div>
             <h3>Soutien financier</h3>
             <p>Un don aide à améliorer l’extension, sa compatibilité et ses futures versions.</p>
             <br>
             <a href="https://www.paypal.com/paypalme/GarisSellier" class="btn btn-amber" target="_blank" rel="noopener noreferrer" style="font-size:0.82rem;padding:8px 18px;">Faire un don ☕</a>
           </div>
+
           <div class="support-card">
             <div class="support-card-icon">🐞</div>
             <h3>Signaler un bug</h3>
