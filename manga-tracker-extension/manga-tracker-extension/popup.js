@@ -6,6 +6,19 @@ const SCOPES = "https://www.googleapis.com/auth/drive.appdata";
 const REDIRECT_URI = chrome.identity.getRedirectURL();
 
 // ──────────────────────────────────────────────
+// DISCORD
+// ──────────────────────────────────────────────
+document.getElementById('btn-discord')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  chrome.tabs.create({ url: 'https://discord.gg/Tef2uFXFC6' });
+});
+
+document.getElementById('about-discord-link')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  chrome.tabs.create({ url: 'https://discord.gg/Tef2uFXFC6' });
+});
+
+// ──────────────────────────────────────────────
 // BANNER NOW VERSTION
 // ──────────────────────────────────────────────
 async function loadUpdateBanner() {
