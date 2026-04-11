@@ -15,26 +15,50 @@
       color: #e8eaf6;
       line-height: 1.7;
     }
-    .container { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
-    .back { color: #6366f1; text-decoration: none; font-size: 0.9rem; display: inline-block; margin-bottom: 32px; }
+    .container { max-width: 760px; margin: 0 auto; padding: 48px 24px; }
+    .back { color: #6366f1; text-decoration: none; font-size: 0.92rem; display: inline-block; margin-bottom: 32px; }
     .back:hover { text-decoration: underline; }
-    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
-    .date { color: #7b82a6; font-size: 0.85rem; margin-bottom: 40px; }
-    h2 { font-size: 1.1rem; font-weight: 600; color: #22c55e; margin: 32px 0 12px; }
-    p { color: #c5c8e6; margin-bottom: 12px; font-size: 0.95rem; }
-    ul { color: #c5c8e6; margin: 8px 0 12px 20px; font-size: 0.95rem; }
+    h1 { font-size: 1.95rem; font-weight: 700; margin-bottom: 8px; }
+    .date { color: #7b82a6; font-size: 0.9rem; margin-bottom: 40px; }
+    h2 { font-size: 1.1rem; font-weight: 600; color: #22c55e; margin: 34px 0 12px; }
+    p { color: #c5c8e6; margin-bottom: 12px; font-size: 0.97rem; }
+    ul { color: #c5c8e6; margin: 8px 0 12px 20px; font-size: 0.97rem; }
     li { margin-bottom: 6px; }
+    strong { color: #f4f6ff; }
+    code {
+      background: rgba(255,255,255,0.06);
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.9em;
+    }
     .highlight {
       background: rgba(34,197,94,0.08);
       border-left: 3px solid #22c55e;
-      padding: 12px 16px;
-      border-radius: 0 6px 6px 0;
-      margin: 16px 0;
-      font-size: 0.9rem;
+      padding: 14px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0 22px;
+      font-size: 0.94rem;
       color: #e8eaf6;
     }
-    footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.06); color: #7b82a6; font-size: 0.8rem; text-align: center; }
-    footer a { color: #6366f1; text-decoration: none; }
+    .permissions {
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.16);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-top: 14px;
+    }
+    .permissions ul { margin-bottom: 0; }
+    footer {
+      margin-top: 52px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      color: #7b82a6;
+      font-size: 0.83rem;
+      text-align: center;
+    }
+    footer a, a.inline-link { color: #6366f1; text-decoration: none; }
+    footer a:hover, a.inline-link:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -45,51 +69,65 @@
     <p class="date">Dernière mise à jour : avril 2026</p>
 
     <div class="highlight">
-      Manga Tracker est une extension Chrome développée par Tiudge. Cette politique explique quelles données sont collectées, comment elles sont utilisées et stockées.
+      Manga Tracker est une extension Chrome développée par Tiudge. Cette politique explique quelles données sont traitées, pourquoi elles le sont, et comment elles sont stockées pour assurer le suivi de lecture manga et la synchronisation optionnelle entre appareils.
     </div>
 
-    <h2>1. Données collectées</h2>
-    <p>Manga Tracker collecte uniquement les données nécessaires à son fonctionnement :</p>
+    <h2>1. Objectif du service</h2>
+    <p>Manga Tracker a pour objectif de sauvegarder votre progression de lecture manga automatiquement, site après site, afin que vous puissiez reprendre exactement au bon chapitre.</p>
+    <p>Le projet vise une compatibilité aussi large que possible avec les sites de lecture manga, avec repérage visuel des chapitres lus, bibliothèque locale, notes, statuts de lecture, synchronisation Google Drive optionnelle, compatibilité mobile via Kiwi Browser et notification de mise à jour.</p>
+
+    <h2>2. Données traitées</h2>
+    <p>Manga Tracker traite uniquement les données nécessaires à son fonctionnement :</p>
     <ul>
-      <li>Les URLs des pages de lecture visitées (pour détecter le manga et le numéro de chapitre)</li>
-      <li>Les titres et slugs des mangas lus</li>
-      <li>Les numéros de chapitres marqués comme lus</li>
-      <li>Les statuts et notes personnelles associés à chaque manga</li>
+      <li>les URL des pages de lecture visitées sur les sites compatibles, pour détecter le manga et le chapitre ;</li>
+      <li>les titres, slugs, domaines et identifiants utiles pour reconnaître un manga ;</li>
+      <li>les numéros de chapitres marqués comme lus ;</li>
+      <li>les statuts de lecture, notes personnelles et préférences d’affichage ;</li>
+      <li>les informations minimales nécessaires à la synchronisation Google Drive si vous activez cette option.</li>
     </ul>
 
-    <h2>2. Stockage des données</h2>
-    <p>Toutes les données sont stockées <strong>localement sur votre appareil</strong> via l'API <code>chrome.storage.local</code>.</p>
-    <p>Si vous activez la synchronisation Google Drive (optionnelle), les données sont également sauvegardées dans le <strong>dossier AppData de votre Google Drive personnel</strong>, qui est invisible dans votre Drive et accessible uniquement par cette extension.</p>
+    <h2>3. Stockage des données</h2>
+    <p>Par défaut, les données sont stockées <strong>localement sur votre appareil</strong> via l’API <code>chrome.storage.local</code>.</p>
+    <p>Si vous activez la synchronisation Google Drive, les données sont également sauvegardées dans le <strong>dossier AppData de votre Google Drive personnel</strong>. Ce dossier est masqué dans l’interface Google Drive et reste dédié aux données techniques de l’application.</p>
 
-    <h2>3. Partage des données</h2>
-    <p>Manga Tracker <strong>ne partage aucune donnée</strong> avec des tiers, des serveurs externes, ou des services d'analyse. Aucune donnée n'est envoyée à l'auteur de l'extension.</p>
+    <h2>4. Partage des données</h2>
+    <p>Manga Tracker <strong>ne vend pas</strong> vos données et <strong>ne les partage pas</strong> avec des tiers à des fins publicitaires, analytiques ou commerciales.</p>
+    <p>Aucune donnée de lecture n’est transmise à l’auteur de l’extension. Lorsque la synchronisation Google Drive est activée, les données sont envoyées uniquement vers le compte Google de l’utilisateur, dans son propre espace Google Drive.</p>
 
-    <h2>4. Google Drive (optionnel)</h2>
-    <p>La synchronisation Google Drive est entièrement optionnelle. Si vous l'activez :</p>
+    <h2>5. Google Drive (optionnel)</h2>
+    <p>La synchronisation Google Drive est entièrement optionnelle. Si vous l’activez :</p>
     <ul>
-      <li>L'extension demande uniquement la permission <code>drive.appdata</code> (dossier caché, non visible dans votre Drive)</li>
-      <li>Aucun autre fichier de votre Drive n'est accessible</li>
-      <li>Vous pouvez révoquer l'accès à tout moment depuis les paramètres de votre compte Google</li>
+      <li>l’extension demande uniquement l’accès nécessaire au stockage dans <code>drive.appdata</code> ;</li>
+      <li>aucun autre fichier personnel de votre Google Drive n’est utilisé par l’extension ;</li>
+      <li>vous pouvez révoquer cet accès à tout moment depuis votre compte Google.</li>
     </ul>
 
-    <h2>5. Permissions Chrome</h2>
-    <p>L'extension utilise les permissions suivantes :</p>
-    <ul>
-      <li><strong>storage</strong> : pour sauvegarder vos données localement</li>
-      <li><strong>identity</strong> : pour l'authentification Google Drive (optionnel)</li>
-      <li><strong>tabs</strong> : pour détecter l'URL de l'onglet actif</li>
-      <li><strong>activeTab</strong> : pour interagir avec la page en cours</li>
-      <li><strong>host_permissions (&lt;all_urls&gt;)</strong> : pour fonctionner sur tous les sites de scans</li>
-    </ul>
+    <h2>6. Permissions Chrome utilisées</h2>
+    <p>L’extension utilise certaines permissions Chrome strictement pour fournir ses fonctions principales.</p>
+    <div class="permissions">
+      <ul>
+        <li><strong>storage</strong> : sauvegarder localement la bibliothèque, les chapitres lus, les notes, les statuts et les réglages.</li>
+        <li><strong>identity</strong> : permettre la connexion Google pour activer la synchronisation Google Drive de manière optionnelle.</li>
+        <li><strong>tabs</strong> : détecter l’URL de l’onglet actif et reconnaître la page manga ou chapitre consultée.</li>
+        <li><strong>activeTab</strong> : interagir avec la page en cours quand l’utilisateur ouvre le popup ou déclenche une action liée au suivi.</li>
+        <li><strong>alarms</strong> : planifier certaines tâches internes liées à la synchronisation, à la maintenance légère ou à la vérification de disponibilité d’une mise à jour.</li>
+        <li><strong>notifications</strong> : informer l’utilisateur lorsqu’une action utile doit être signalée, comme une mise à jour disponible.</li>
+        <li><strong>host_permissions</strong> : permettre au script de contenu de fonctionner sur les sites de lecture compatibles afin d’identifier les chapitres lus et d’afficher les repères visuels directement sur les pages.</li>
+      </ul>
+    </div>
 
-    <h2>6. Données des mineurs</h2>
-    <p>Cette extension n'est pas destinée aux enfants de moins de 13 ans. Nous ne collectons pas sciemment de données personnelles de mineurs.</p>
+    <h2>7. Code distant</h2>
+    <p>Manga Tracker n’exécute pas de code JavaScript distant. Le code nécessaire à son fonctionnement est inclus dans le package de l’extension.</p>
+    <p>Les services externes éventuellement appelés, comme Google Drive pour la synchronisation, sont utilisés uniquement pour l’échange de données et non pour charger ou exécuter du code distant.</p>
 
-    <h2>7. Modifications</h2>
-    <p>Cette politique peut être mise à jour. La date de dernière modification est indiquée en haut de cette page. L'utilisation continue de l'extension vaut acceptation des modifications.</p>
+    <h2>8. Données des mineurs</h2>
+    <p>Cette extension n’est pas destinée aux enfants de moins de 13 ans. Nous ne collectons pas sciemment de données personnelles de mineurs.</p>
 
-    <h2>8. Contact</h2>
-    <p>Pour toute question relative à la confidentialité, vous pouvez contacter le développeur via GitHub : <a href="https://github.com/Garis24/manga-tracker" style="color:#6366f1">github.com/Tiudge/manga-tracker</a></p>
+    <h2>9. Modifications</h2>
+    <p>Cette politique peut être mise à jour pour refléter l’évolution de l’extension, de ses permissions ou de ses fonctionnalités. La date de dernière mise à jour est indiquée en haut de cette page.</p>
+
+    <h2>10. Contact</h2>
+    <p>Pour toute question relative à la confidentialité, vous pouvez consulter le site du projet <a class="inline-link" href="https://garis24.github.io/manga-tracker/" target="_blank" rel="noopener noreferrer">garis24.github.io/manga-tracker</a> ou le dépôt GitHub <a class="inline-link" href="https://github.com/Garis24/manga-tracker" target="_blank" rel="noopener noreferrer">github.com/Garis24/manga-tracker</a>.</p>
 
     <footer>
       <a href="index.html">Accueil</a> &nbsp;·&nbsp;
