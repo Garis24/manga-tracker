@@ -423,41 +423,71 @@
     </div>
 
     <div class="cta-grid">
-      <div class="cta cta-install">
-        <h2>🔗 Installer l'extension</h2>
-        <p>Disponible en chargement local via le mode développeur Chrome.</p>
-        <a href="https://download-directory.github.io/?url=https://github.com/Garis24/manga-tracker/tree/main/manga-tracker-extension&filename=manga-tracker-extension.zip" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Télécharger l'extension</a>
-        <div class="install-tuto">
-          <button class="install-tuto-toggle" type="button" aria-expanded="false" onclick="toggleInstallTuto(this)">
-            <span>📘 Tuto simple : comment l’installer</span>
-            <span class="install-tuto-arrow">▾</span>
-          </button>
-          <div class="install-tuto-content" hidden>
-            <ol>
-              <li>Téléchargez le fichier ZIP.</li>
-              <li>Extrayez le dossier <strong>manga-tracker-extension</strong> à l’endroit où vous voulez le conserver.</li>
-              <li>Ouvrez Chrome puis allez sur <button type="button" class="chrome-link-btn" onclick="copyChromeExtensionsUrl()">chrome://extensions/</button> <span id="copy-feedback" style="display:none; margin-left:8px; color:#22c55e;">Copié !</span></li>
-              <li>Activez le <strong>Mode développeur</strong> en haut à droite.</li>
-              <li>Cliquez sur <strong>Charger l’extension non empaquetée</strong>.</li>
-              <li>Sélectionnez le dossier <strong>manga-tracker-extension</strong>.</li>
-              <li>Épinglez l’extension, puis profitez 🎉</li>
-            </ol>
+        <div class="cta cta-install">
+          <div class="available-badge">
+            <span class="available-dot"></span>
+            Disponible maintenant
+          </div>
+
+          <div class="play-store-visual">
+            <img
+              class="play-icon"
+              src="https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg"
+              alt="Logo Chrome Web Store"
+              width="40"
+              height="40"
+              loading="lazy"
+            >
+            <span style="font-size:1rem;color:#d0d3f0;font-weight:700;">Chrome Web Store</span>
+          </div>
+
+          <h2>🚀 Installer l'extension</h2>
+          <p>
+            Installez Manga Tracker directement depuis le Chrome Web Store pour profiter
+            d’une installation simple, propre et de mises à jour automatiques.
+          </p>
+
+          <a
+            href="https://chromewebstore.google.com/detail/manga-tracker/kobfdnepnoplkcgnpkcjellfeokhhnlk?authuser=0&hl=fr"
+            class="btn btn-primary"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Installer depuis le Chrome Web Store
+          </a>
+
+          <div class="update-note">
+            Une fois installée via le Chrome Web Store, l’extension profite d’une gestion
+            plus naturelle des mises à jour et ne nécessite plus le mode développeur.
           </div>
         </div>
-        <div class="update-note">Après installation, une alerte de nouvelle version peut aider à savoir quand mettre à jour l’extension si vous l’utilisez encore en mode développeur.</div>
-      </div>
 
-      <div class="cta cta-soon">
-        <div class="coming-badge">
-          <span class="coming-dot"></span>
-          Bientôt disponible
+        <div class="cta cta-source">
+          <div class="source-badge">
+            <span class="source-dot"></span>
+            Open-source
+          </div>
+
+          <h2>💻 Voir le code source</h2>
+          <p>
+            Le projet est open-source sur GitHub. Vous pouvez consulter le code,
+            suivre l’évolution du projet, vérifier le fonctionnement de l’extension
+            et proposer des améliorations.
+          </p>
+
+          <a
+            href="https://github.com/Garis24/manga-tracker/tree/main/manga-tracker-extension/manga-tracker-extension"
+            class="btn btn-secondary"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Voir le code source sur GitHub
+          </a>
+
+          <div class="update-note">
+            Idéal pour suivre les changements, signaler un problème ou contribuer au projet.
+          </div>
         </div>
-        <div class="play-store-visual">
-          <img class="play-icon" src="https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg" alt="Logo Chrome Web Store" width="40" height="40" loading="lazy">
-          <span style="font-size:1rem;color:#d0d3f0;font-weight:700;">Chrome Web Store</span>
-        </div>
-        <h2>Bientôt sur le Chrome Web Store</h2>
-        <p>Une version publique est prévue pour simplifier l’installation, éviter le mode développeur et rendre les mises à jour plus naturelles.</p>
       </div>
 
       <div class="cta cta-support">

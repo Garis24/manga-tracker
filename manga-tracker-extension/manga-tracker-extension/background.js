@@ -31,27 +31,39 @@
 //   version: 2
 // }
 
-const UPDATE_MANIFEST_URL = 'https://raw.githubusercontent.com/Garis24/manga-tracker/main/manga-tracker-extension/manga-tracker-extension/manifest.json';
-const UPDATE_ZIP_URL = 'https://download-directory.github.io/?url=https://github.com/Garis24/manga-tracker/tree/main/manga-tracker-extension&filename=manga-tracker-extension.zip';
-const UPDATE_CHECK_INTERVAL_MIN = 180;
-const UPDATE_STATE_KEY = 'mangaTrackerUpdateInfo';
 const DB_KEY = 'mangaTrackerDB';
-const SYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 
 
 
 // ──────────────────────────────────────────────
 // TEST VERSTION
 // ──────────────────────────────────────────────
+const CHROME_WEB_STORE_URL = 'https://chromewebstore.google.com/detail/manga-tracker/kobfdnepnoplkcgnpkcjellfeokhhnlk?authuser=0&hl=fr';
+const UPDATE_CHECK_INTERVAL_MIN = 180;
+const UPDATE_STATE_KEY = 'mangaTrackerUpdateInfo';
+
 chrome.alarms.create('checkExtensionUpdate', {
   periodInMinutes: UPDATE_CHECK_INTERVAL_MIN
 });
+
+async function ensureUpdateAlarm() {
+  const existing = await chrome.alarms.get('checkExtensionUpdate');
+  if (!existing) {
+    chrome.alarms.create('checkExtensionUpdate', {
+      periodInMinutes: UPDATE_CHECK_INTERVAL_MIN
+    });
+  }
+}
 
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === 'checkExtensionUpdate') {
     checkForExtensionUpdate().catch(() => {});
   }
 });
+
+ensureUpdateAlarm().catch(() => {});
+
+
 
 function compareVersions(a, b) {
   const pa = String(a || '0').split('.').map(n => parseInt(n, 10) || 0);
@@ -81,75 +93,126 @@ async function getUpdateInfo() {
   });
 }
 
-async function checkForExtensionUpdate() {
-  try {
-    const localVersion = chrome.runtime.getManifest().version;
+async function clearUpdateBadge() {
+  chrome.action.setBadgeText({ text: '' });
+}
 
-    const resp = await fetch(UPDATE_MANIFEST_URL, {
-      cache: 'no-store'
+function requestUpdateCheckAsync() {
+  return new Promise((resolve, reject) => {
+    try {
+      chrome.runtime.requestUpdateCheck((status, details) => {
+        if (chrome.runtime.lastError) {
+          return reject(new Error(chrome.runtime.lastError.message));
+        }
+        resolve({ status, details: details || {} });
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+async function notifyUpdateAvailable(info) {
+  if (!info?.remoteVersion) return;
+
+  chrome.notifications.create('manga-tracker-update', {
+    type: 'basic',
+    iconUrl: 'icons/icon128.png',
+    title: 'Manga Tracker',
+    message: `Mise à jour prête : v${info.remoteVersion}`,
+    priority: 2
+  });
+}
+
+async function syncInstalledVersionState() {
+  const currentVersion = chrome.runtime.getManifest().version;
+  const previous = await getUpdateInfo();
+
+  if (!previous || !previous.remoteVersion || compareVersions(currentVersion, previous.remoteVersion) >= 0) {
+    await saveUpdateInfo({
+      checkedAt: new Date().toISOString(),
+      localVersion: currentVersion,
+      remoteVersion: currentVersion,
+      hasUpdate: false,
+      updateReady: false,
+      status: 'up_to_date',
+      storeUrl: CHROME_WEB_STORE_URL
     });
 
-    if (!resp.ok) {
-      throw new Error(`update_manifest_${resp.status}`);
-    }
+    await clearUpdateBadge();
+  }
+}
 
-    const remoteManifest = await resp.json();
-    const remoteVersion = remoteManifest?.version;
+async function checkForExtensionUpdate() {
+  const localVersion = chrome.runtime.getManifest().version;
 
-    if (!remoteVersion) {
-      throw new Error('missing_remote_version');
-    }
-
-    const hasUpdate = compareVersions(remoteVersion, localVersion) > 0;
+  try {
+    const { status, details } = await requestUpdateCheckAsync();
 
     const info = {
       checkedAt: new Date().toISOString(),
       localVersion,
-      remoteVersion,
-      hasUpdate,
-      downloadUrl: UPDATE_ZIP_URL
+      remoteVersion: details?.version || localVersion,
+      hasUpdate: status === 'update_available',
+      updateReady: false,
+      status,
+      storeUrl: CHROME_WEB_STORE_URL
     };
 
-    const previous = await getUpdateInfo();
-
-    if (hasUpdate && (!previous || previous.remoteVersion !== remoteVersion)) {
-      await notifyUpdateAvailable(info);
-    }
-    if (hasUpdate) {
-      chrome.action.setBadgeText({ text: 'NEW' });
-      chrome.action.setBadgeBackgroundColor({ color: '#22c55e' });
+    if (status === 'no_update') {
+      info.remoteVersion = localVersion;
+      await clearUpdateBadge();
     }
 
     await saveUpdateInfo(info);
     return { success: true, ...info };
   } catch (err) {
     const previous = await getUpdateInfo();
+
     const fallback = {
       ...(previous || {}),
       checkedAt: new Date().toISOString(),
-      error: err.message || 'update_check_failed'
+      localVersion,
+      status: 'error',
+      error: err.message || 'update_check_failed',
+      storeUrl: CHROME_WEB_STORE_URL
     };
+
     await saveUpdateInfo(fallback);
-    return { success: false, ...(previous || {}), error: err.message || 'update_check_failed' };
+    return { success: false, ...fallback };
   }
 }
 
+chrome.runtime.onUpdateAvailable.addListener(async (details) => {
+  const info = {
+    checkedAt: new Date().toISOString(),
+    localVersion: chrome.runtime.getManifest().version,
+    remoteVersion: details.version,
+    hasUpdate: true,
+    updateReady: true,
+    status: 'update_available',
+    storeUrl: CHROME_WEB_STORE_URL
+  };
 
-// ──────────────────────────────────────────────
-// Notif verstion
-// ──────────────────────────────────────────────
+  await saveUpdateInfo(info);
 
-async function notifyUpdateAvailable(info) {
-  if (!info?.hasUpdate) return;
+  chrome.action.setBadgeText({ text: 'NEW' });
+  chrome.action.setBadgeBackgroundColor({ color: '#22c55e' });
 
-  chrome.notifications.create('manga-tracker-update', {
-    type: 'basic',
-    iconUrl: 'icons/icon128.png',
-    title: 'Manga Tracker',
-    message: `Nouvelle version disponible : v${info.remoteVersion} (actuelle : v${info.localVersion})`,
-    priority: 2
-  });
+  await notifyUpdateAvailable(info);
+});
+
+async function applyPendingUpdate() {
+  const info = await getUpdateInfo();
+
+  if (!info?.updateReady) {
+    return { success: false, reason: 'no_update_ready' };
+  }
+
+  chrome.runtime.reload();
+  return { success: true, reloading: true };
 }
+
 
 // ──────────────────────────────────────────────
 // HELPERS BDD LOCALE
@@ -878,6 +941,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return { success: true, info };
       },
 
+      applyPendingUpdate: async () => applyPendingUpdate(),
+
       markAsRead: async () => {
         const result = await markAsRead(request.data);
         return result;
@@ -1023,11 +1088,18 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // BADGE ICÔNE (nombre de mangas en lecture active)
 // ──────────────────────────────────────────────
 async function updateBadgeCount() {
+  const updateInfo = await getUpdateInfo();
+
+  if (updateInfo?.updateReady) {
+    chrome.action.setBadgeText({ text: 'NEW' });
+    chrome.action.setBadgeBackgroundColor({ color: '#22c55e' });
+    return;
+  }
+
   const db = await getDB();
   const reading = Object.values(db.mangas).filter(
     m => m.status === 'reading' || !m.status
   ).length;
-
 
   if (reading === 0) {
     chrome.action.setBadgeText({ text: '' });
@@ -1037,8 +1109,8 @@ async function updateBadgeCount() {
   }
 }
 
-
 chrome.runtime.onStartup.addListener(() => {
+  syncInstalledVersionState().catch(() => {});
   setTimeout(syncToDrive, 3000);
   setTimeout(updateBadgeCount, 1000);
   setTimeout(() => {
@@ -1048,6 +1120,7 @@ chrome.runtime.onStartup.addListener(() => {
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log('[Manga Tracker] Extension installée / mise à jour');
+  syncInstalledVersionState().catch(() => {});
   updateBadgeCount();
   checkForExtensionUpdate().catch(() => {});
 });

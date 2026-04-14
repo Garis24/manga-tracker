@@ -1,9 +1,10 @@
 /**
 * MANGA TRACKER - Popup JS
 */
-const CLIENT_ID = "67925064642-hsfnd2odlq3qm8j676rni0udukr0c5g8.apps.googleusercontent.com";
+const CLIENT_ID = "67925064642-k8s30qr54jje3b59n391siah2dtrss7m.apps.googleusercontent.com";
 const SCOPES = "https://www.googleapis.com/auth/drive.appdata";
 const REDIRECT_URI = chrome.identity.getRedirectURL();
+const CHROME_WEB_STORE_URL = 'https://chromewebstore.google.com/detail/manga-tracker/kobfdnepnoplkcgnpkcjellfeokhhnlk?authuser=0&hl=fr';
 
 // ──────────────────────────────────────────────
 // DISCORD
@@ -34,40 +35,83 @@ async function loadUpdateBanner() {
 
   if (!box || !text || !btn) return;
 
-  const hasUpdate = !!(info && info.hasUpdate && info.remoteVersion && info.localVersion);
+  const storeUrl = info?.storeUrl || CHROME_WEB_STORE_URL;
 
-  if (!hasUpdate) {
+  btn.onclick = null;
+
+  if (!info || (!info.hasUpdate && !info.updateReady && info.status !== 'throttled')) {
     box.classList.add('hidden');
     settingsBadge?.classList.add('hidden');
     menuBadge?.classList.add('hidden');
 
-    if (checkBtn) checkBtn.textContent = 'Vérifier les mises à jour';
+    if (checkBtn) checkBtn.textContent = 'Rechercher une mise à jour';
     return;
   }
 
-  text.textContent = `Nouvelle version disponible : v${info.localVersion} actuellement > v${info.remoteVersion} disponible`;
-  btn.onclick = () => chrome.tabs.create({ url: info.downloadUrl });
+  if (info.updateReady) {
+    text.textContent = `La version v${info.remoteVersion} est prête. Cliquez pour redémarrer l’extension et appliquer la mise à jour.`;
+    btn.textContent = 'Mettre à jour maintenant';
+    btn.onclick = async () => {
+      await sendMsg('applyPendingUpdate');
+      window.close();
+    };
 
-  box.classList.remove('hidden');
-  settingsBadge?.classList.remove('hidden');
-  menuBadge?.classList.remove('hidden');
+    box.classList.remove('hidden');
+    settingsBadge?.classList.remove('hidden');
+    menuBadge?.classList.remove('hidden');
 
-  if (checkBtn) checkBtn.textContent = 'Re-vérifier les mises à jour';
+    if (checkBtn) checkBtn.textContent = 'Re-vérifier';
+    return;
+  }
+
+  if (info.status === 'throttled') {
+    text.textContent = 'Chrome limite les vérifications trop fréquentes. Réessayez dans quelques minutes.';
+    btn.textContent = 'Ouvrir le Chrome Web Store';
+    btn.onclick = () => chrome.tabs.create({ url: storeUrl });
+
+    box.classList.remove('hidden');
+    settingsBadge?.classList.add('hidden');
+    menuBadge?.classList.add('hidden');
+
+    if (checkBtn) checkBtn.textContent = 'Réessayer plus tard';
+    return;
+  }
+
+  if (info.hasUpdate) {
+    text.textContent = `Une nouvelle version v${info.remoteVersion} a été détectée. Chrome la téléchargera et l’appliquera automatiquement dès que l’extension sera inactive.`;
+    btn.textContent = 'Voir sur le Chrome Web Store';
+    btn.onclick = () => chrome.tabs.create({ url: storeUrl });
+
+    box.classList.remove('hidden');
+    settingsBadge?.classList.remove('hidden');
+    menuBadge?.classList.remove('hidden');
+
+    if (checkBtn) checkBtn.textContent = 'Re-vérifier';
+  }
 }
 
 async function manualCheckUpdate() {
   const resp = await sendMsg('checkForExtensionUpdate');
+  await loadUpdateBanner();
 
-  if (resp?.success) {
-    await loadUpdateBanner();
+  if (!resp?.success) {
+    showToast(`Erreur vérification MAJ : ${resp?.error || 'inconnue'}`, 'error');
+    return;
+  }
 
-    if (resp.hasUpdate) {
-      showToast(`Nouvelle version disponible : v${resp.remoteVersion}`, 'success');
-    } else {
-      showToast(`Aucune mise à jour, version actuelle : v${resp.localVersion}`, 'success');
-    }
-  } else {
-    showToast(`Erreur vérification MAJ: ${resp?.error || 'inconnue'}`, 'error');
+  if (resp.status === 'update_available') {
+    showToast(`Mise à jour détectée, Chrome la prépare automatiquement`, 'success');
+    return;
+  }
+
+  if (resp.status === 'no_update') {
+    showToast(`Aucune mise à jour, version actuelle : v${resp.localVersion}`, 'success');
+    return;
+  }
+
+  if (resp.status === 'throttled') {
+    showToast(`Vérification limitée par Chrome, réessaie dans quelques minutes`, 'error');
+    return;
   }
 }
 // ──────────────────────────────────────────────
