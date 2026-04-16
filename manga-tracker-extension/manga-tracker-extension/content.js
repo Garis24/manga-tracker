@@ -17,7 +17,7 @@
 const CHAPTER_URL_PATTERNS = [
 
   // ── AVEC MOT-CLÉ CHAPITRE DANS L'URL ──
-
+  /\/lecture-en-ligne\/([-\w]+)\/read\/chapitre-(\d+(?:\.\d+)?)\/?$/i,
   // /manga/slug/chapitre/163  ou  /manga/slug/chapter/133
   // → phenix-scans, asurascans, sushiscan, lelscans...
   /\/(?:manga|comics|series|webtoon|manhwa|manhua|oeuvre)\/([-\w]+)\/(?:chapitre?s?|chapters?|ch|chap)s?\/([\d.]+)/i,
@@ -29,6 +29,7 @@ const CHAPTER_URL_PATTERNS = [
   // /read/slug/chapter/163  ou  /read/slug/chapitre/163
   // → phenix-scans, bentomanga...
   /\/read\/([-\w]+)\/(?:chapitre?s?|chapters?|ch|chap)s?\/([\d.]+)/i,
+  
 
   // /read/slug/chapter-163
   /\/read\/([-\w]+)\/(?:chapitre?s?|chapters?|ch|chap)s?-([\d.]+)/i,
@@ -71,6 +72,7 @@ const MANGA_PAGE_PATTERNS = [
   /\/series\/([-\w]+)\/?$/i,
   /\/webtoon\/([-\w]+)\/?$/i,
   /\/manhwa\/([-\w]+)\/?$/i,
+  /\/lecture-en-ligne\/([-\w]+)\/?$/i,
   /\/manhua\/([-\w]+)\/?$/i,
   /\/comics\/([-\w]+)\/?$/i,          // asurascans
   /\/oeuvre\/([-\w]+)\/?$/i,          // mangas-origines
@@ -221,12 +223,56 @@ function extractMangaTitle() {
 
 function cleanTitle(title) {
   if (!title) return 'Manga inconnu';
-  // Supprimer "Chapitre X", "Chapter X", le nom du site
-  return title
-    .replace(/\s*[-|–]\s*.*chapitre?.*$/i, '')
-    .replace(/\s*[-|–]\s*.*chapter.*$/i, '')
-    .replace(/\s*[-|–]\s*.*chap.*\d+.*$/i, '')
-    .trim() || title.trim();
+
+  let t = String(title).trim();
+
+  // Supprimer "Lire " au début
+  t = t.replace(/^lire\s+/i, '');
+
+  // Garder ce qu'il y a avant "»"
+  if (t.includes('»')) {
+    t = t.split('»')[0].trim();
+  }
+
+  // Supprimer le nom du site après |
+  t = t.replace(/\s*\|\s*.*$/i, '');
+
+  // Supprimer les formes "Lire Chapitre X", "Chapitre X", "Chapter X", "Ch X"
+  t = t.replace(/\b(?:lire\s+)?(?:chapitre?s?|chapters?|ch\.?)\s*[\d.]+.*$/i, '');
+
+  // Supprimer les mentions VF / FR / scan
+  t = t.replace(/\b(?:scan\s*)?(?:vf|fr|vostfr)\b.*$/i, '');
+
+  // Supprimer un "en" qui reste à la fin
+  t = t.replace(/\sen\s*$/i, '').trim();
+
+  // Supprimer séparateurs de fin
+  t = t.replace(/[-|–:]\s*$/g, '').trim();
+
+  return t || 'Manga inconnu';
+}
+
+// ──────────────────────────────────────────────
+// MENU CONTEXT
+// ──────────────────────────────────────────────
+let contextMenuBound = false;
+
+function bindGlobalChapterContextMenu(pageInfo) {
+  if (contextMenuBound) return;
+  contextMenuBound = true;
+
+  document.addEventListener('contextmenu', (e) => {
+    const link = e.target.closest('a[href]');
+    if (!link) return;
+
+    const href = link.getAttribute('href') || '';
+    const chapterNum = extractChapterNumberFromLink(link) || extractChapterNumberFromHref(href);
+    if (chapterNum === null) return;
+
+    e.preventDefault();
+    collectDetectedChapters();
+    showMarkUpToMenu(link, chapterNum, pageInfo);
+  });
 }
 
 // ──────────────────────────────────────────────
@@ -283,17 +329,8 @@ function attachChapterLink(link, readSet, pageInfo) {
   const chapterNum = extractChapterNumberFromLink(link) || extractChapterNumberFromHref(href);
   if (chapterNum === null) return;
 
-  // Badge vert si lu
   if (readSet && readSet.has(chapterNum)) {
     addReadBadge(link, chapterNum, pageInfo);
-  }
-
-  // Clic droit → menu "Marquer lus jusqu'à X"
-  if (pageInfo) {
-    link.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      showMarkUpToMenu(link, chapterNum, pageInfo);
-    });
   }
 }
 
@@ -459,6 +496,10 @@ function showMarkUpToMenu(link, chapterNum, pageInfo) {
       <span class="mtcm-icon">✔</span>
       Marquer lus jusqu'au Ch. ${chapterNum}
     </div>
+    <div class="mtcm-item" id="mtcm-open-new-tab">
+      <span class="mtcm-icon">↗</span>
+      Ouvrir dans une nouvelle page
+    </div>
     <div class="mtcm-item mtcm-cancel" id="mtcm-cancel">
       <span class="mtcm-icon">✕</span>
       Annuler
@@ -494,6 +535,13 @@ function showMarkUpToMenu(link, chapterNum, pageInfo) {
     if (resp?.success) {
       loadBadgesForMangaPage(pageInfo);
     }
+  });
+
+  menu.querySelector('#mtcm-open-new-tab').addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    hideContextMenu();
+    window.open(link.href, '_blank', 'noopener');
   });
 
   menu.querySelector('#mtcm-cancel').addEventListener('click', hideContextMenu);
@@ -816,10 +864,9 @@ function init() {
     // On est en train de lire un chapitre → on l'enregistre
     autoRegisterChapter(pageInfo);
   } else if (pageInfo.type === 'manga') {
-    // On est sur la page du manga → on affiche les badges
-    loadBadgesForMangaPage(pageInfo);
-    // Observer les ajouts de nouveaux noeuds DOM ("charger plus", pagination, lazy load)
-    startChapterListObserver(pageInfo);
+  loadBadgesForMangaPage(pageInfo);
+  bindGlobalChapterContextMenu(pageInfo);
+  startChapterListObserver(pageInfo);
   }
 }
 
