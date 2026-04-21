@@ -1,0 +1,12 @@
+{
+  "addons": {
+    "manga-tracker@garis24.github.io": {
+      "updates": [
+        {
+          "version": "1.4.11",
+          "update_link": "https://github.com/Garis24/manga-tracker/updates/manga-tracker-1.4.11.xpi"
+        }
+      ]
+    }
+  }
+}
