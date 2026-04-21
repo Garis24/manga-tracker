@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "Manga Tracker",
+  "version": "1.4.11",
+  "description": "Suivi de lecture manga sur tous les sites de scans",
+  "permissions": [
+    "storage",
+    "identity",
+    "tabs",
+    "activeTab",
+    "alarms",
+    "notifications"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "manga-tracker@garis24.github.io",
+      "strict_min_version": "142.0",
+      "update_url": "https://garis24.github.io/manga-tracker/updates/firefox-updates.json",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  }
+}

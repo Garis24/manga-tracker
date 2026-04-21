@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manga Tracker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" aria-label="Manga Tracker" width="22" height="22">
+        <rect x="3" y="2" width="12" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M7 7h4M7 10h4M7 13h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="17" cy="17" r="4" fill="#22c55e"/>
+        <path d="M15 17l1.5 1.5L19 15" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Manga Tracker</span>
+    </div>
+    <div class="header-actions">
+      <button id="btn-report" class="btn-icon" title="Signaler un bug ou un site non reconnu" aria-label="Signaler un bug ou un site non reconnu">
+        <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button id="btn-sync" class="btn-icon" title="Synchroniser avec Google Drive" aria-label="Synchroniser avec Google Drive">
+        <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+          <path d="M4 12C4 7.6 7.6 4 12 4c2.5 0 4.7 1.1 6.2 2.8M20 12c0 4.4-3.6 8-8 8-2.5 0-4.7-1.1-6.2-2.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M18 2l2.2 2.8L18 7.6M6 16.4L3.8 19.2 6 22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button id="btn-settings" class="btn-icon btn-icon-with-badge" title="Paramètres" aria-label="Paramètres">
+        <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+          <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <span id="settings-update-badge" class="mini-now-badge hidden">NEW</span>
+      </button>
+    </div>
+  </header>
+
+  <div id="current-page-info" class="current-page hidden">
+    <div class="page-badge" id="page-type-badge">—</div>
+    <div class="page-details">
+      <div class="page-manga-title" id="page-manga-title">—</div>
+      <div class="page-chapter-info" id="page-chapter-info">—</div>
+    </div>
+    <button id="btn-toggle-read" class="btn-toggle" title="Marquer lu ou non lu" aria-label="Marquer lu ou non lu">
+      <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+        <path d="M5 12l5 5L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <div id="view-main">
+    <div class="search-filter-bar">
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" fill="none" width="14" height="14" class="search-icon">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M20 20l-3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <input type="text" id="search-input" placeholder="Rechercher un manga…">
+      </div>
+      <select id="filter-status" class="filter-select" aria-label="Filtrer par statut">
+        <option value="">Tous</option>
+        <option value="reading">En cours</option>
+        <option value="completed">Terminé</option>
+        <option value="paused">En pause</option>
+        <option value="dropped">Abandonné</option>
+      </select>
+    </div>
+
+    <div class="stats-bar">
+      <span id="stats-total">0 manga</span>
+      <span id="stats-chapters">0 chapitres lus</span>
+    </div>
+
+    <div id="manga-list" class="manga-list">
+      <div class="empty-state" id="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" width="32" height="32" opacity="0.45">
+          <rect x="3" y="2" width="12" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M7 7h4M7 10h4M7 13h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        <p>Aucun manga suivi</p>
+        <small>Ouvre un chapitre pour commencer.</small>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-detail" class="hidden">
+    <button id="btn-back" class="btn-back">
+      <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+        <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Retour
+    </button>
+    <div class="detail-header">
+      <div class="detail-title" id="detail-title">—</div>
+      <div class="detail-domain" id="detail-domain">—</div>
+
+      <div class="detail-status-row">
+        <select id="detail-status" class="status-select">
+          <option value="reading">📖 En cours</option>
+          <option value="completed">✅ Terminé</option>
+          <option value="paused">⏸ En pause</option>
+          <option value="dropped">❌ Abandonné</option>
+        </select>
+      </div>
+
+      <div class="detail-stats">
+        <span id="detail-total-chapters">0 chapitres lus</span>
+        <span class="dot">·</span>
+        <span id="detail-progress">—</span>
+        <span class="dot">·</span>
+        <span id="detail-last-read">—</span>
+      </div>
+      
+    </div>
+
+    <div class="notes-section">
+      <textarea id="detail-notes" placeholder="Notes personnelles…" rows="3"></textarea>
+      <button id="btn-save-notes" class="btn-save-notes">Enregistrer</button>
+    </div>
+
+    <div class="chapter-chips" id="chapter-chips"></div>
+    <div class="detail-actions">
+      <button id="btn-delete-manga" class="btn-danger">Supprimer ce manga</button>
+    </div>
+  </div>
+
+  <div id="view-settings" class="hidden">
+    <button id="btn-back-settings" class="btn-back">
+      <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+        <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Retour
+    </button>
+
+    <div class="settings-section">
+      <h3>Affichage</h3>
+      <label class="settings-label">Taille du point vert</label>
+      <div class="badge-size-picker">
+        <button class="size-btn" data-size="small">S</button>
+        <button class="size-btn active" data-size="medium">M</button>
+        <button class="size-btn" data-size="large">L</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Google Drive Sync</h3>
+      <p class="settings-desc">Synchronisez vos données entre vos appareils dans un dossier caché et gratuit.</p>
+      <div id="sync-status" class="sync-status">
+        <span class="sync-dot" id="sync-dot"></span>
+        <span id="sync-status-text">Non connecté</span>
+      </div>
+      <div class="settings-actions">
+        <button id="btn-connect-drive" class="btn-primary">Connecter Google Drive</button>
+        <button id="btn-force-sync" class="btn-secondary">Forcer la synchronisation</button>
+        <button id="btn-import-drive" class="btn-secondary">Importer depuis Drive</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Données locales</h3>
+      <div class="settings-actions">
+        <button id="btn-export" class="btn-secondary">Exporter (JSON)</button>
+        <button id="btn-import" class="btn-secondary">Importer (JSON)</button>
+        <input type="file" id="import-file" accept=".json" style="display:none">
+        <button id="btn-clear-all" class="btn-danger">Tout effacer</button>
+      </div>
+    </div>
+
+   <div class="settings-section">
+      <h3 class="section-title-with-badge">
+        <span>Mise à jour</span>
+        <span id="menu-update-badge" class="inline-now-badge hidden">NEW</span>
+      </h3>
+      <p class="settings-desc">
+        Cette version est distribuée par le Chrome Web Store.
+        Chrome la met à jour automatiquement, et vous pouvez aussi lancer une vérification manuelle.
+      </p>
+
+      <div id="update-banner" class="update-banner hidden">
+        <div id="update-banner-text" class="settings-desc"></div>
+        <div class="settings-actions">
+          <button id="update-banner-download" class="btn-primary">Mettre à jour maintenant</button>
+        </div>
+      </div>
+
+      <div class="settings-actions">
+        <button id="btn-check-update" class="btn-secondary">Rechercher une mise à jour</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>À propos</h3>
+      <p class="settings-desc">
+        Manga Tracker v<span id="ext-version">1.0.0</span><br>
+        Le projet vise une compatibilité aussi large que possible avec les sites de lecture manga.<br>
+        Site officiel :
+        <a href="https://garis24.github.io/manga-tracker/" target="_blank" rel="noopener noreferrer">garis24.github.io/manga-tracker</a>
+        <br><br>Rejoignez la communauté Discord : <a id="about-discord-link" href="https://discord.gg/Tef2uFXFC6" target="_blank" rel="noopener noreferrer">discord.gg/Tef2uFXFC6</a>
+      </p>
+    </div>
+  </div>
+
+  <div id="view-report" class="hidden">
+    <button id="btn-back-report" class="btn-back">
+      <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+        <path d="M19 12H5M12 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Retour
+    </button>
+    <div class="settings-section">
+      <h3>Signaler un problème</h3>
+      <p class="settings-desc">Site non reconnu, lecture non détectée, badges absents ou navigation spéciale.</p>
+
+      <div class="report-form">
+        <label class="settings-label">URL du site concerné</label>
+        <input type="text" id="report-url" class="report-input" placeholder="https://…">
+
+        <label class="settings-label">Type de problème</label>
+        <select id="report-type" class="filter-select" style="width:100%">
+          <option value="detection">Lecture non détectée</option>
+          <option value="badges">Badges non affichés</option>
+          <option value="site">Site non reconnu</option>
+          <option value="spa">Navigation sans rechargement</option>
+          <option value="other">Autre</option>
+        </select>
+
+        <label class="settings-label">Commentaire (optionnel)</label>
+        <textarea id="report-comment" class="report-input" rows="3" placeholder="Décrivez le problème…"></textarea>
+
+        <button id="btn-send-report" class="btn-primary">Envoyer via Google Form</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="popup-footer">
+    <span>Créé par <strong>Tiudge</strong></span>
+    <a id="btn-discord" href="https://discord.gg/Tef2uFXFC6" class="discord-btn" title="Rejoindre le Discord">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13" aria-hidden="true">
+        <path d="M20.317 4.369A19.791 19.791 0 0 0 15.558 3c-.206.375-.444.88-.608 1.276a18.27 18.27 0 0 0-5.9 0A12.64 12.64 0 0 0 8.442 3a19.736 19.736 0 0 0-4.76 1.369C.674 8.861-.144 13.242.265 17.562A19.9 19.9 0 0 0 6.13 20.5c.472-.645.892-1.328 1.255-2.045a12.94 12.94 0 0 1-1.975-.95c.166-.12.328-.246.486-.376 3.81 1.79 7.94 1.79 11.706 0 .16.13.322.256.488.376-.63.37-1.292.688-1.977.95.363.717.783 1.4 1.255 2.045a19.867 19.867 0 0 0 5.867-2.938c.48-5.01-.82-9.35-2.918-13.193ZM8.02 14.845c-1.143 0-2.078-1.047-2.078-2.334 0-1.288.917-2.335 2.078-2.335 1.17 0 2.096 1.056 2.078 2.335 0 1.287-.917 2.334-2.078 2.334Zm7.96 0c-1.143 0-2.078-1.047-2.078-2.334 0-1.288.917-2.335 2.078-2.335 1.17 0 2.096 1.056 2.078 2.335 0 1.287-.908 2.334-2.078 2.334Z"/>
+      </svg>
+      Discord
+    </a>
+    <a id="btn-paypal" href="#" class="paypal-btn" title="Soutenir le projet">
+      <svg viewBox="0 0 24 24" fill="none" width="13" height="13">
+        <path d="M7 11c0-2.8 2.2-5 5-5h2c2.2 0 4 1.8 4 4s-1.8 4-4 4h-1l-1 4H9l1-7H7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+      Soutenir
+    </a>
+  </footer>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
