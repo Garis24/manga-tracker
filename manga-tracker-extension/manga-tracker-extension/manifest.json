@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Manga Tracker",
-  "version": "1.4.10",
+  "version": "1.4.11",
   "description": "Suivi de lecture manga sur tous les sites de scans",
   "permissions": [
     "storage",
