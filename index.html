@@ -567,6 +567,35 @@
       .preview-section { gap: 20px; }
       .cta-support { grid-column: unset; }
     }
+    .btn-disabled {
+      display: inline-block;
+      color: #9ba3bf;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: not-allowed;
+      opacity: 0.75;
+      box-shadow: none;
+    }
+
+    .btn-disabled:hover {
+      transform: none;
+      filter: none;
+    }
+
+    .cta-source {
+      background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(99,102,241,0.05));
+      border-color: rgba(255,255,255,0.10);
+    }
+
+    .cta-firefox {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, rgba(249,168,37,0.08), rgba(236,72,153,0.06));
+      border-color: rgba(249,168,37,0.18);
+    }
   </style>
 </head>
 <body>
@@ -771,6 +800,26 @@
         </div>
       </div>
 
+      <div class="cta cta-source">
+        <div class="state-badge">
+          <span class="state-dot"></span>
+          Open-source
+        </div>
+
+        <h2>Voir le code source</h2>
+        <p>
+          Le projet est open-source sur GitHub. Vous pouvez consulter le code, suivre son évolution et proposer des améliorations.
+        </p>
+
+        <a href="https://github.com/Garis24/manga-tracker/tree/main/manga-tracker-extension/manga-tracker-extension" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+          Voir le code source sur GitHub
+        </a>
+
+        <div class="update-note">
+          Idéal pour suivre les changements, signaler un problème ou contribuer au projet.
+        </div>
+      </div>
+
       <div class="cta cta-firefox">
         <div class="state-badge">
           <span class="state-dot soon"></span>
@@ -783,49 +832,15 @@
 
         <h2>Version Firefox en préparation</h2>
         <p>
-          La version Firefox est en cours de vérification pour publication. Elle sera ajoutée ici dès qu’elle sera disponible officiellement.
+          La version Firefox est compatible et en cours de vérification pour publication sur Firefox Add-ons.
         </p>
 
-        <a href="https://github.com/Garis24/manga-tracker" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
-          Suivre l’avancement sur GitHub
-        </a>
+        <button class="btn btn-disabled" disabled aria-disabled="true" type="button">
+          Bientôt
+        </button>
 
         <div class="update-note">
-          En attendant la mise en ligne sur Firefox Add-ons, vous pouvez suivre les nouveautés du projet et les prochaines annonces depuis GitHub ou Discord.
-        </div>
-      </div>
-
-      <div class="cta cta-support">
-        <h2>💛 Soutenir le projet</h2>
-        <p>Manga Tracker est gratuit et open-source. Si vous l’appréciez, voici comment aider le projet à continuer d’évoluer.</p>
-
-        <div class="support-cards">
-          <div class="support-card">
-            <div class="support-card-icon">💬</div>
-            <h3>Rejoindre le Discord</h3>
-            <p>Rejoignez la communauté pour proposer des idées, suivre les mises à jour et échanger autour du projet.</p>
-            <br>
-            <a href="https://discord.gg/Tef2uFXFC6" class="btn btn-discord" target="_blank" rel="noopener noreferrer" style="font-size:0.82rem;padding:8px 18px;">Rejoindre le Discord</a>
-          </div>
-
-          <div class="support-card">
-            <div class="support-card-icon">💰</div>
-            <h3>Soutien financier</h3>
-            <p>Un don aide à améliorer l’extension, sa compatibilité et ses futures versions.</p>
-            <br>
-            <a href="https://www.paypal.com/paypalme/GarisSellier" class="btn btn-amber" target="_blank" rel="noopener noreferrer" style="font-size:0.82rem;padding:8px 18px;">Faire un don ☕</a>
-          </div>
-
-          <div class="support-card">
-            <div class="support-card-icon">🐞</div>
-            <h3>Signaler un bug</h3>
-            <p>Vous avez trouvé un problème ? Signalez-le directement depuis le bouton intégré au popup de l’extension.</p>
-            <br>
-            <div class="bug-hint" style="justify-content:center;margin-bottom:10px;">
-              <span class="bug-exclaim-inline">!</span>
-              <span>Cliquez sur <strong style="color:#c5c8e0;">!</strong> dans le popup de l’extension</span>
-            </div>
-          </div>
+          Le lien sera ajouté ici dès que la version Firefox sera officiellement disponible.
         </div>
       </div>
     </div>
