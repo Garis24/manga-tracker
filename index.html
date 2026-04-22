@@ -8,25 +8,27 @@
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-WKWBM7RW');</script>
   <!-- End Google Tag Manager -->
+
   <!-- Google tag (gtag.js) Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XX5MGLVED5"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-XX5MGLVED5');
   </script>
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Manga Tracker est une extension Chrome qui suit automatiquement votre progression de lecture manga, pensée pour être compatible avec n’importe quel site de lecture manga, avec synchronisation Google Drive et usage mobile testé sur Kiwi Browser.">
-  <title>Manga Tracker — Extension Chrome</title>
+  <meta name="description" content="Manga Tracker est une extension de suivi manga compatible avec Chrome, Opera GX, Firefox et Kiwi Browser sur Android. Sauvegarde automatique, repérage des chapitres lus et synchronisation Google Drive.">
+  <title>Manga Tracker — Extension navigateur</title>
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="alternate icon" href="icons/icon16.jpg" type="image/jpeg">
   <link rel="apple-touch-icon" href="icons/icon128.jpg">
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: #0f1117;
@@ -34,7 +36,9 @@
       min-height: 100vh;
       line-height: 1.55;
     }
+
     a { color: inherit; }
+
     header {
       padding: 56px 24px 40px;
       text-align: center;
@@ -42,6 +46,7 @@
       position: relative;
       overflow: hidden;
     }
+
     header::before {
       content: '';
       position: absolute;
@@ -49,6 +54,7 @@
       background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(99,102,241,0.12) 0%, transparent 70%);
       pointer-events: none;
     }
+
     .logo {
       display: inline-flex;
       align-items: center;
@@ -57,206 +63,448 @@
       position: relative;
       z-index: 1;
     }
+
     .logo-icon {
-      width: 56px; height: 56px;
+      width: 56px;
+      height: 56px;
       border-radius: 14px;
       overflow: hidden;
       box-shadow: 0 0 24px rgba(99,102,241,0.3), 0 4px 16px rgba(0,0,0,0.4);
       flex-shrink: 0;
     }
+
     .logo-icon svg { width: 100%; height: 100%; display: block; }
-    h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; position: relative; z-index: 1; }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      position: relative;
+      z-index: 1;
+    }
+
     .subtitle {
-      color: #7b82a6; margin-top: 10px; font-size: 1rem;
-      max-width: 680px; margin-inline: auto; line-height: 1.6; position: relative; z-index: 1;
+      color: #7b82a6;
+      margin-top: 10px;
+      font-size: 1rem;
+      max-width: 760px;
+      margin-inline: auto;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
     }
+
     .header-badges {
-      display: flex; gap: 10px; justify-content: center;
-      margin-top: 20px; flex-wrap: wrap; position: relative; z-index: 1;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
     }
+
     .badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 20px; padding: 5px 12px; font-size: 0.78rem; color: #9ba3bf;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      color: #9ba3bf;
     }
-    .badge-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
-    main { max-width: 860px; margin: 0 auto; padding: 52px 24px; }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 52px 24px;
+    }
+
     .preview-section {
-      display: flex; align-items: center; gap: 32px;
-      margin-bottom: 52px; flex-wrap: wrap;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      margin-bottom: 52px;
+      flex-wrap: wrap;
     }
+
     .preview-text { flex: 1; min-width: 220px; }
-    .preview-text h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; color: #e8eaf6; }
-    .preview-text p { font-size: 0.92rem; color: #7b82a6; line-height: 1.68; }
-    .preview-mockup {
-      width: 200px; flex-shrink: 0; background: #1a1d2e;
-      border-radius: 14px; border: 1px solid rgba(255,255,255,0.08);
-      overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.5); margin: 0 auto;
+
+    .preview-text h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #e8eaf6;
     }
+
+    .preview-text p {
+      font-size: 0.92rem;
+      color: #7b82a6;
+      line-height: 1.68;
+    }
+
+    .preview-mockup {
+      width: 200px;
+      flex-shrink: 0;
+      background: #1a1d2e;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      margin: 0 auto;
+    }
+
     .mock-header {
-      background: #141624; padding: 10px 14px;
-      display: flex; align-items: center; gap: 8px;
+      background: #141624;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
-    .mock-icon { width: 22px; height: 22px; border-radius: 5px; overflow: hidden; }
-    .mock-icon svg { width: 100%; height: 100%; }
-    .mock-title { font-size: 0.75rem; font-weight: 700; color: #e8eaf6; }
-    .mock-body { padding: 12px 14px; }
-    .mock-manga-row {
-      display: flex; align-items: center; gap: 8px;
-      padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-    .mock-manga-row:last-child { border-bottom: none; }
-    .mock-green-dot {
-      width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
-      box-shadow: 0 0 6px rgba(34,197,94,0.7); flex-shrink: 0;
-    }
-    .mock-gray-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: rgba(255,255,255,0.15); flex-shrink: 0;
-    }
-    .mock-text { flex: 1; }
-    .mock-manga-name { font-size: 0.65rem; color: #c5c8e0; font-weight: 600; display: block; }
-    .mock-chapter { font-size: 0.58rem; color: #5a5f7a; }
-    .mock-footer {
-      background: #141624; padding: 8px 14px;
-      display: flex; align-items: center; justify-content: space-between;
-      border-top: 1px solid rgba(255,255,255,0.06);
-    }
-    .mock-btn { font-size: 0.6rem; color: #6366f1; font-weight: 600; }
-    .mock-exclaim {
-      width: 18px; height: 18px; border-radius: 50%;
-      border: 1.5px solid rgba(255,255,255,0.2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.65rem; color: #9ba3bf; font-weight: 700;
-    }
-    .section-label {
-      text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.7rem;
-      color: #6366f1; font-weight: 600; margin-bottom: 16px;
-    }
-    .features {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 14px; margin-bottom: 52px;
-    }
-    .feature {
-      background: #1a1d2e; border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 12px; padding: 20px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-    .feature:hover { border-color: rgba(99,102,241,0.3); transform: translateY(-2px); }
-    .feature-icon { font-size: 1.4rem; margin-bottom: 10px; }
-    .feature h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; color: #d0d3f0; }
-    .feature p { font-size: 0.82rem; color: #7b82a6; line-height: 1.55; }
-    .cta-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 16px; margin-bottom: 40px;
-    }
-    .cta { text-align: center; padding: 28px 28px 24px; border-radius: 14px; border: 1px solid rgba(99,102,241,0.2); }
-    .cta-install { background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(34,197,94,0.07)); }
-    .cta-support { background: linear-gradient(135deg, rgba(249,168,37,0.07), rgba(99,102,241,0.07)); border-color: rgba(249,168,37,0.2); grid-column: 1 / -1; }
-    .cta h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
-    .cta p { color: #7b82a6; font-size: 0.87rem; margin-bottom: 18px; line-height: 1.55; }
-    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-    .play-store-visual {
-      display: flex; align-items: center; justify-content: center;
-      gap: 10px; margin-bottom: 14px; opacity: 0.75;
-    }
-    .play-icon { width: 40px; height: 40px; }
-    .support-cards {
-      display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 4px;
-    }
-    .support-card {
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px; padding: 14px 20px; text-align: center;
-      min-width: 180px; flex: 1; max-width: 240px;
-    }
-    .support-card-icon { font-size: 1.5rem; margin-bottom: 8px; }
-    .support-card h3 { font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: #d0d3f0; }
-    .support-card p { font-size: 0.78rem; color: #7b82a6; line-height: 1.45; }
-    .btn {
-      display: inline-block; color: white; padding: 10px 22px;
-      border-radius: 8px; text-decoration: none; font-weight: 600;
-      font-size: 0.88rem; transition: background 0.15s, transform 0.15s;
-    }
-    .btn:hover { transform: translateY(-1px); }
-    .btn-primary { background: #6366f1; }
-    .btn-primary:hover { background: #4f52d8; }
-    .btn-green { background: #16a34a; }
-    .btn-green:hover { background: #15803d; }
-    .btn-amber { background: #d97706; }
-    .btn-amber:hover { background: #b45309; }
-    .bug-hint {
-      display: inline-flex; align-items: center; gap: 8px;
-      margin-top: 10px; font-size: 0.8rem; color: #5a5f7a;
-    }
-    .bug-exclaim-inline {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 20px; height: 20px; border-radius: 50%;
-      border: 1.5px solid rgba(255,255,255,0.25);
-      font-size: 0.72rem; color: #9ba3bf; font-weight: 700; flex-shrink: 0;
-    }
-    .install-tuto {
-      margin-top: 18px;
-      text-align: left;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
+
+    .mock-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 5px;
       overflow: hidden;
     }
-    .install-tuto-toggle {
-      width: 100%;
+
+    .mock-icon svg { width: 100%; height: 100%; }
+
+    .mock-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #e8eaf6;
+    }
+
+    .mock-body { padding: 12px 14px; }
+
+    .mock-manga-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .mock-manga-row:last-child { border-bottom: none; }
+
+    .mock-green-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px rgba(34,197,94,0.7);
+      flex-shrink: 0;
+    }
+
+    .mock-gray-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+
+    .mock-text { flex: 1; }
+
+    .mock-manga-name {
+      font-size: 0.65rem;
+      color: #c5c8e0;
+      font-weight: 600;
+      display: block;
+    }
+
+    .mock-chapter {
+      font-size: 0.58rem;
+      color: #5a5f7a;
+    }
+
+    .mock-footer {
+      background: #141624;
+      padding: 8px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding: 16px 18px;
-      background: transparent;
-      border: none;
-      color: #d0d3f0;
-      font-size: 0.92rem;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: left;
-    }
-    .install-tuto-toggle:hover { background: rgba(255,255,255,0.03); }
-    .install-tuto-arrow {
-      color: #9ba3bf;
-      font-size: 1rem;
-      transition: transform 0.2s ease;
-      flex-shrink: 0;
-    }
-    .install-tuto-toggle[aria-expanded="true"] .install-tuto-arrow { transform: rotate(180deg); }
-    .install-tuto-content {
-      padding: 0 18px 16px;
       border-top: 1px solid rgba(255,255,255,0.06);
     }
-    .install-tuto ol { margin: 14px 0 0; padding-left: 18px; color: #a8afc9; }
-    .install-tuto li { font-size: 0.83rem; line-height: 1.6; margin-bottom: 6px; }
-    .install-tuto code {
-      background: rgba(99,102,241,0.12);
-      color: #cfd2ff;
-      padding: 2px 6px;
-      border-radius: 6px;
-      font-family: Consolas, monospace;
-      font-size: 0.8rem;
+
+    .mock-btn {
+      font-size: 0.6rem;
+      color: #6366f1;
+      font-weight: 600;
     }
-    .chrome-link-btn {
-      background: rgba(99,102,241,0.12);
-      color: #cfd2ff;
-      border: 1px solid rgba(99,102,241,0.25);
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-family: Consolas, monospace;
-      font-size: 0.82rem;
-      cursor: pointer;
-    }
-    .chrome-link-btn:hover { background: rgba(99,102,241,0.2); }
-    .small-note {
-      margin-top: 12px;
-      font-size: 0.8rem;
+
+    .mock-exclaim {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
       color: #9ba3bf;
-      line-height: 1.6;
+      font-weight: 700;
     }
+
+    .section-label {
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.7rem;
+      color: #6366f1;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .compat-grid,
+    .features,
+    .cta-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .compat-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      margin-bottom: 52px;
+    }
+
+    .compat-card,
+    .feature {
+      background: #1a1d2e;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .compat-card h3,
+    .feature h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #d0d3f0;
+    }
+
+    .compat-card p,
+    .feature p {
+      font-size: 0.82rem;
+      color: #7b82a6;
+      line-height: 1.55;
+    }
+
+    .compat-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .compat-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+      color: #c5c8e0;
+    }
+
+    .compat-pill.ok {
+      background: rgba(34,197,94,0.12);
+      border-color: rgba(34,197,94,0.25);
+      color: #8ef0af;
+    }
+
+    .compat-pill.soon {
+      background: rgba(249,168,37,0.10);
+      border-color: rgba(249,168,37,0.25);
+      color: #f6c970;
+    }
+
+    .features {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin-bottom: 52px;
+    }
+
+    .feature {
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .feature:hover {
+      border-color: rgba(99,102,241,0.3);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      font-size: 1.4rem;
+      margin-bottom: 10px;
+    }
+
+    .cta-grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      margin-bottom: 40px;
+    }
+
+    .cta {
+      text-align: center;
+      padding: 28px 28px 24px;
+      border-radius: 14px;
+      border: 1px solid rgba(99,102,241,0.2);
+      background: #171a28;
+    }
+
+    .cta-install {
+      background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(34,197,94,0.07));
+    }
+
+    .cta-firefox {
+      background: linear-gradient(135deg, rgba(249,168,37,0.08), rgba(236,72,153,0.06));
+      border-color: rgba(249,168,37,0.18);
+    }
+
+    .cta-support {
+      background: linear-gradient(135deg, rgba(249,168,37,0.07), rgba(99,102,241,0.07));
+      border-color: rgba(249,168,37,0.2);
+      grid-column: 1 / -1;
+    }
+
+    .state-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.06);
+      color: #d7daf1;
+    }
+
+    .state-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
+    .state-dot.soon { background: #f59e0b; }
+
+    .cta h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .cta p {
+      color: #7b82a6;
+      font-size: 0.87rem;
+      margin-bottom: 18px;
+      line-height: 1.55;
+    }
+
+    .store-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      opacity: 0.9;
+      flex-wrap: wrap;
+    }
+
+    .play-icon { width: 40px; height: 40px; }
+
+    .support-cards {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .support-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 14px 20px;
+      text-align: center;
+      min-width: 180px;
+      flex: 1;
+      max-width: 240px;
+    }
+
+    .support-card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    .support-card h3 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #d0d3f0;
+    }
+
+    .support-card p {
+      font-size: 0.78rem;
+      color: #7b82a6;
+      line-height: 1.45;
+    }
+
+    .btn {
+      display: inline-block;
+      color: white;
+      padding: 10px 22px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.88rem;
+      transition: background 0.15s, transform 0.15s;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary { background: #6366f1; }
+    .btn-primary:hover { background: #4f52d8; }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #eef0ff;
+    }
+
+    .btn-secondary:hover { background: rgba(255,255,255,0.12); }
+
+    .btn-green { background: #16a34a; }
+    .btn-green:hover { background: #15803d; }
+
+    .btn-amber { background: #d97706; }
+    .btn-amber:hover { background: #b45309; }
+
+    .btn-discord {
+      background: linear-gradient(135deg, #5865F2, #4752C4);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .btn-discord:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
+
     .update-note {
       margin-top: 18px;
       padding: 14px 16px;
@@ -268,26 +516,56 @@
       font-size: 0.83rem;
       line-height: 1.6;
     }
-    footer {
-      text-align: center; padding: 24px; color: #7b82a6;
-      font-size: 0.78rem; border-top: 1px solid rgba(255,255,255,0.06);
-    }
-    footer a { color: #6366f1; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
-    @media (max-width: 500px) {
-      h1 { font-size: 1.6rem; }
-      .preview-section { gap: 20px; }
-      .cta-support { grid-column: unset; }
-    }
-    .btn-discord {
-      background: linear-gradient(135deg, #5865F2, #4752C4);
-      color: #fff;
-      border: 1px solid rgba(255,255,255,0.08);
+
+    .small-note {
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: #9ba3bf;
+      line-height: 1.6;
     }
 
-    .btn-discord:hover {
-      filter: brightness(1.06);
-      transform: translateY(-1px);
+    .bug-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #5a5f7a;
+    }
+
+    .bug-exclaim-inline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.25);
+      font-size: 0.72rem;
+      color: #9ba3bf;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: #7b82a6;
+      font-size: 0.78rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    footer a {
+      color: #6366f1;
+      text-decoration: none;
+    }
+
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 560px) {
+      h1 { font-size: 1.65rem; }
+      .preview-section { gap: 20px; }
+      .cta-support { grid-column: unset; }
     }
   </style>
 </head>
@@ -296,6 +574,7 @@
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WKWBM7RW"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
+
   <header>
     <div class="logo">
       <div class="logo-icon">
@@ -312,23 +591,33 @@
       </div>
       <h1>Manga Tracker</h1>
     </div>
-    <p class="subtitle">Extension Chrome pensée pour suivre automatiquement votre progression manga. Le projet se veut compatible avec n’importe quel site de lecture manga, avec synchronisation Google Drive et prise en charge mobile testée sur Kiwi Browser.</p>
+
+    <p class="subtitle">
+      Extension de suivi manga compatible avec Chrome, Opera GX, Firefox et Kiwi Browser sur Android.
+      Sauvegarde automatique, repérage des chapitres lus et synchronisation Google Drive pour reprendre votre lecture sans perdre votre progression.
+    </p>
+
     <div class="header-badges">
       <span class="badge"><span class="badge-dot"></span>Gratuit &amp; Open-source</span>
-      <span class="badge">📚 Compatible avec le plus de sites possible</span>
+      <span class="badge">🖥️ Chrome / Opera GX / Firefox</span>
+      <span class="badge">📱 Kiwi Browser (Android)</span>
       <span class="badge">☁️ Google Drive Sync</span>
-      <span class="badge">📱 Testé sur Kiwi Browser</span>
     </div>
   </header>
 
   <main>
     <div class="preview-section">
       <div class="preview-text">
-        <p class="section-label">Aperçu de l'extension</p>
-        <h2>Votre lecture sauvegardée,<br>site après site</h2>
-        <p>Que vous changiez de site, de manga ou d'appareil, Manga Tracker garde votre progression à jour automatiquement. Vous reprenez votre lecture exactement au bon chapitre, sans avoir à chercher où vous en étiez.</p>
-        <p class="small-note">Le projet vise une compatibilité aussi large que possible avec les sites de lecture manga, pour offrir un suivi simple et universel.</p>
+        <p class="section-label">Aperçu</p>
+        <h2>Votre progression manga, retrouvée instantanément</h2>
+        <p>
+          Manga Tracker enregistre automatiquement vos chapitres lus et vous aide à reprendre votre lecture exactement là où vous vous êtes arrêté, même en changeant de site ou d’appareil.
+        </p>
+        <p class="small-note">
+          Le projet vise une compatibilité large avec les sites de lecture manga, sur desktop comme sur mobile.
+        </p>
       </div>
+
       <div class="preview-mockup">
         <div class="mock-header">
           <div class="mock-icon">
@@ -343,6 +632,7 @@
           </div>
           <span class="mock-title">Manga Tracker</span>
         </div>
+
         <div class="mock-body">
           <div class="mock-manga-row">
             <span class="mock-green-dot"></span>
@@ -373,10 +663,46 @@
             </div>
           </div>
         </div>
+
         <div class="mock-footer">
           <span class="mock-btn">⚙ Sync Drive</span>
           <span class="mock-exclaim">!</span>
         </div>
+      </div>
+    </div>
+
+    <p class="section-label">Compatibilité</p>
+    <div class="compat-grid">
+      <div class="compat-card">
+        <div class="compat-top">
+          <h3>Chrome</h3>
+          <span class="compat-pill ok">Disponible</span>
+        </div>
+        <p>Installation directe via le Chrome Web Store avec mises à jour plus simples.</p>
+      </div>
+
+      <div class="compat-card">
+        <div class="compat-top">
+          <h3>Opera GX</h3>
+          <span class="compat-pill ok">Compatible</span>
+        </div>
+        <p>Fonctionne via l’écosystème Chromium et peut être installée depuis la base des extensions Chrome. </p>
+      </div>
+
+      <div class="compat-card">
+        <div class="compat-top">
+          <h3>Firefox</h3>
+          <span class="compat-pill soon">Bientôt</span>
+        </div>
+        <p>La compatibilité est en cours de finalisation et la publication est prévue prochainement.</p>
+      </div>
+
+      <div class="compat-card">
+        <div class="compat-top">
+          <h3>Kiwi Browser</h3>
+          <span class="compat-pill ok">Android</span>
+        </div>
+        <p>Utilisation mobile testée sur Kiwi Browser pour retrouver votre suivi manga aussi sur smartphone.</p>
       </div>
     </div>
 
@@ -385,86 +711,99 @@
       <div class="feature">
         <div class="feature-icon">🟢</div>
         <h3>Repérage automatique</h3>
-        <p>Les chapitres déjà lus sont identifiés visuellement pour vous permettre de reprendre votre lecture en un coup d'œil.</p>
+        <p>Les chapitres déjà lus sont identifiés visuellement pour reprendre votre lecture en un coup d’œil.</p>
       </div>
+
       <div class="feature">
         <div class="feature-icon">📖</div>
         <h3>Sauvegarde auto</h3>
-        <p>Votre progression est enregistrée automatiquement dès l'ouverture d'un chapitre, sans action manuelle.</p>
+        <p>Votre progression est enregistrée dès l’ouverture d’un chapitre, sans action manuelle.</p>
       </div>
+
       <div class="feature">
         <div class="feature-icon">☁️</div>
         <h3>Sync Google Drive</h3>
-        <p>Votre bibliothèque et votre avancement restent synchronisés sur vos appareils via Google Drive.</p>
+        <p>Votre bibliothèque et votre avancement restent synchronisés entre vos appareils.</p>
       </div>
+
       <div class="feature">
         <div class="feature-icon">🌐</div>
         <h3>Compatibilité large</h3>
-        <p>Le projet se veut compatible avec n’importe quel site de lecture manga pour garder un suivi aussi universel que possible.</p>
+        <p>Le projet vise un suivi aussi universel que possible sur les sites de lecture manga.</p>
       </div>
+
       <div class="feature">
         <div class="feature-icon">📱</div>
         <h3>Mobile compatible</h3>
-        <p>L’utilisation mobile a aussi été testée sur Kiwi Browser pour proposer une expérience plus souple sur Android.</p>
+        <p>L’expérience mobile a été testée sur Kiwi Browser pour Android.</p>
       </div>
+
       <div class="feature">
         <div class="feature-icon">⬆️</div>
         <h3>Mises à jour</h3>
-        <p>Une notification peut prévenir lorsqu’une nouvelle version est disponible, pratique tant que l’installation se fait hors Chrome Web Store.</p>
+        <p>Le projet évolue régulièrement pour améliorer la compatibilité, la synchro et l’expérience utilisateur.</p>
       </div>
     </div>
 
     <div class="cta-grid">
       <div class="cta cta-install">
-        <div class="available-badge">
-          <span class="available-dot"></span>
+        <div class="state-badge">
+          <span class="state-dot"></span>
           Disponible maintenant
         </div>
 
-        <div class="play-store-visual">
+        <div class="store-visual">
           <img class="play-icon" src="https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg" alt="Logo Chrome Web Store" width="40" height="40" loading="lazy">
-          <span style="font-size:1rem;color:#d0d3f0;font-weight:700;">Chrome Web Store</span>
+          <span style="font-size:1rem;color:#d0d3f0;font-weight:700;">Chrome / Opera GX / Kiwi Browser</span>
         </div>
 
-        <h2>🚀 Installer l'extension</h2>
-        <p>Installez Manga Tracker directement depuis le Chrome Web Store pour profiter d’une installation simple et de mises à jour automatiques.</p>
+        <h2>Installer dès maintenant</h2>
+        <p>
+          Installez Manga Tracker depuis le Chrome Web Store pour Chrome, Opera GX et les navigateurs basés sur Chromium compatibles.
+        </p>
 
         <a href="https://chromewebstore.google.com/detail/manga-tracker/kobfdnepnoplkcgnpkcjellfeokhhnlk?authuser=0&hl=fr" class="btn btn-primary" target="_blank" rel="noopener noreferrer">
           Installer depuis le Chrome Web Store
         </a>
 
         <div class="update-note">
-          Une fois installée via le Chrome Web Store, l’extension ne nécessite plus le mode développeur et les mises à jour sont gérées plus naturellement.
+          Sur Opera GX, l’installation peut nécessiter l’intégration prévue pour les extensions Chrome. Sur Kiwi Browser, l’usage mobile Android a été testé via le support d’extensions du navigateur.
         </div>
       </div>
 
-      <div class="cta cta-source">
-        <div class="source-badge">
-          <span class="source-dot"></span>
-          Open-source
+      <div class="cta cta-firefox">
+        <div class="state-badge">
+          <span class="state-dot soon"></span>
+          Bientôt disponible
         </div>
 
-        <h2>💻 Voir le code source</h2>
-        <p>Le projet est open-source sur GitHub. Vous pouvez consulter le code, suivre son évolution et proposer des améliorations.</p>
+        <div class="store-visual">
+          <span style="font-size:1rem;color:#d0d3f0;font-weight:700;">Firefox Add-ons</span>
+        </div>
 
-        <a href="https://github.com/Garis24/manga-tracker/tree/main/manga-tracker-extension/manga-tracker-extension" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
-          Voir le code source sur GitHub
+        <h2>Version Firefox en préparation</h2>
+        <p>
+          La version Firefox est en cours de vérification pour publication. Elle sera ajoutée ici dès qu’elle sera disponible officiellement.
+        </p>
+
+        <a href="https://github.com/Garis24/manga-tracker" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
+          Suivre l’avancement sur GitHub
         </a>
 
         <div class="update-note">
-          Idéal pour suivre les changements, signaler un problème ou contribuer au projet.
+          En attendant la mise en ligne sur Firefox Add-ons, vous pouvez suivre les nouveautés du projet et les prochaines annonces depuis GitHub ou Discord.
         </div>
       </div>
-    </div>
 
       <div class="cta cta-support">
         <h2>💛 Soutenir le projet</h2>
-        <p>Manga Tracker est gratuit et open-source. Si vous l'appréciez, voici comment aider le projet à continuer d’évoluer.</p>
+        <p>Manga Tracker est gratuit et open-source. Si vous l’appréciez, voici comment aider le projet à continuer d’évoluer.</p>
+
         <div class="support-cards">
           <div class="support-card">
             <div class="support-card-icon">💬</div>
             <h3>Rejoindre le Discord</h3>
-            <p>Rejoignez la communauté pour proposer des idées, suivre les mises à jour, découvrir les nouvelles fonctionnalités et échanger autour du projet.</p>
+            <p>Rejoignez la communauté pour proposer des idées, suivre les mises à jour et échanger autour du projet.</p>
             <br>
             <a href="https://discord.gg/Tef2uFXFC6" class="btn btn-discord" target="_blank" rel="noopener noreferrer" style="font-size:0.82rem;padding:8px 18px;">Rejoindre le Discord</a>
           </div>
@@ -484,7 +823,7 @@
             <br>
             <div class="bug-hint" style="justify-content:center;margin-bottom:10px;">
               <span class="bug-exclaim-inline">!</span>
-              <span>Cliquez sur <strong style="color:#c5c8e0;">!</strong> dans le popup de l'extension</span>
+              <span>Cliquez sur <strong style="color:#c5c8e0;">!</strong> dans le popup de l’extension</span>
             </div>
           </div>
         </div>
@@ -497,23 +836,5 @@
     <a href="privacy.html">Politique de confidentialité</a> &nbsp;&middot;&nbsp;
     <a href="terms.html">Conditions d'utilisation</a>
   </footer>
-
-  <script>
-    function toggleInstallTuto(button) {
-      const content = button.nextElementSibling;
-      const isOpen = button.getAttribute('aria-expanded') === 'true';
-      button.setAttribute('aria-expanded', String(!isOpen));
-      content.hidden = isOpen;
-    }
-    function copyChromeExtensionsUrl() {
-      navigator.clipboard.writeText('chrome://extensions/').then(() => {
-        const feedback = document.getElementById('copy-feedback');
-        feedback.style.display = 'inline';
-        setTimeout(() => {
-          feedback.style.display = 'none';
-        }, 2000);
-      });
-    }
-  </script>
 </body>
 </html>
