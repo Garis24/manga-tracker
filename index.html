@@ -271,7 +271,10 @@
     .features,
     .cta-grid {
       display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 16px;
+      margin-bottom: 40px;
+      align-items: stretch;
     }
 
     .compat-grid {
@@ -591,10 +594,14 @@
       border-color: rgba(255,255,255,0.10);
     }
 
-    .cta-firefox {
-      grid-column: 1 / -1;
-      background: linear-gradient(135deg, rgba(249,168,37,0.08), rgba(236,72,153,0.06));
-      border-color: rgba(249,168,37,0.18);
+    @media (max-width: 980px) {
+      .cta-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cta-support {
+        grid-column: auto;
+      }
     }
   </style>
 </head>
