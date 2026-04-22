@@ -603,6 +603,39 @@
         grid-column: auto;
       }
     }
+    .feature {
+      position: relative;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .feature-badge-new {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fff7ed;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 8px 20px rgba(239,68,68,0.18);
+      z-index: 2;
+    }
+
+    .feature-badge-new::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fff;
+      opacity: 0.9;
+    }
   </style>
 </head>
 <body>
@@ -779,6 +812,13 @@
         <div class="feature-icon">⬆️</div>
         <h3>Mises à jour</h3>
         <p>Le projet évolue régulièrement pour améliorer la compatibilité, la synchro et l’expérience utilisateur.</p>
+      </div>
+
+      <div class="feature">
+        <span class="feature-badge-new">New</span>
+        <div class="feature-icon">🖱️</div>
+        <h3>Menu clic droit</h3>
+        <p>Depuis la page d’un manga, un clic droit sur un chapitre permet de le marquer comme lu jusqu’à ce chapitre ou de l’ouvrir dans une nouvelle page, à partir d’au moins un chapitre déjà lu.</p>
       </div>
     </div>
 
