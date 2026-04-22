@@ -32,9 +32,91 @@
 // }
 
 const DB_KEY = 'mangaTrackerDB';
+const OAUTH_CLIENT_ID = "67925064642-k8s30qr54jje3b59n391siah2dtrss7m.apps.googleusercontent.com";
+const OAUTH_SCOPES = "https://www.googleapis.com/auth/drive.appdata";
 
+const EXTENSION_CONFIG = {
+  browser: "firefox",
+  storeUrl: "https://garis24.github.io/manga-tracker/",
+  updateMode: "self_hosted"
+};
 
+function getIdentityApi() {
+  return globalThis.browser?.identity || globalThis.chrome?.identity;
+}
 
+function buildOAuthUrl({ clientId = OAUTH_CLIENT_ID, scopes = OAUTH_SCOPES } = {}) {
+  const identityApi = getIdentityApi();
+  const redirectUri = identityApi.getRedirectURL();
+
+  console.log("[BG] buildOAuthUrl redirectUri =", redirectUri);
+
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    response_type: "token",
+    scope: scopes,
+    prompt: "consent"
+  });
+
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  console.log("[BG] buildOAuthUrl authUrl =", authUrl);
+
+  return { authUrl, redirectUri };
+}
+
+function parseOAuthRedirect(redirectUrl) {
+  const hash = new URL(redirectUrl).hash.replace(/^#/, "");
+  const data = new URLSearchParams(hash);
+
+  const accessToken = data.get("access_token");
+  const expiresIn = parseInt(data.get("expires_in") || "3600", 10);
+
+  return { accessToken, expiresIn, hash };
+}
+
+async function startFirefoxOAuth({ clientId = OAUTH_CLIENT_ID, scopes = OAUTH_SCOPES } = {}) {
+  const identityApi = getIdentityApi();
+  const { authUrl, redirectUri } = buildOAuthUrl({ clientId, scopes });
+
+  console.log("[BG] startFirefoxOAuth start");
+  console.log("[BG] startFirefoxOAuth redirectUri =", redirectUri);
+
+  const redirectUrl = await Promise.race([
+    identityApi.launchWebAuthFlow({
+      url: authUrl,
+      interactive: true
+    }),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("oauth_timeout")), 120000)
+    )
+  ]);
+
+  console.log("[BG] startFirefoxOAuth redirectUrl =", redirectUrl);
+
+  const { accessToken, expiresIn, hash } = parseOAuthRedirect(redirectUrl);
+
+  console.log("[BG] startFirefoxOAuth hash =", hash);
+  console.log("[BG] startFirefoxOAuth accessToken present =", !!accessToken);
+  console.log("[BG] startFirefoxOAuth expiresIn =", expiresIn);
+
+  if (!accessToken) {
+    throw new Error("token_absent");
+  }
+
+  const storeResp = await storeToken(accessToken, expiresIn);
+  console.log("[BG] startFirefoxOAuth storeResp =", storeResp);
+
+  const check = await checkDriveAuth();
+  console.log("[BG] startFirefoxOAuth post-check =", check);
+
+  return {
+    success: true,
+    accessToken,
+    expiresIn,
+    connected: !!check?.connected
+  };
+}
 // ──────────────────────────────────────────────
 // TEST VERSTION
 // ──────────────────────────────────────────────
@@ -516,15 +598,83 @@ let syncTimer = null;
 
 
 async function storeToken(accessToken, expiresIn = 3600) {
+  console.log("[BG] storeToken start", {
+    hasAccessToken: !!accessToken,
+    expiresIn
+  });
+
   const expiry = Date.now() + Math.max((expiresIn - 60) * 1000, 60 * 1000);
 
+  console.log("[BG] storeToken computed expiry", {
+    now: Date.now(),
+    expiry
+  });
 
   return new Promise((resolve) => {
     chrome.storage.local.set(
       { [TOKEN_KEY]: { accessToken, expiry } },
-      () => resolve({ success: true })
+      () => {
+        console.log("[BG] storeToken saved", {
+          lastError: chrome.runtime.lastError?.message || null
+        });
+        resolve({ success: true });
+      }
     );
   });
+}
+
+async function getStoredTokenData() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(TOKEN_KEY, (res) => {
+      const value = res[TOKEN_KEY] || null;
+      console.log("[BG] getStoredTokenData =", value);
+      resolve(value);
+    });
+  });
+}
+
+async function getToken() {
+  const data = await getStoredTokenData();
+
+  console.log("[BG] getToken raw data =", data);
+
+  if (!data) {
+    console.log("[BG] getToken -> null (no data)");
+    return null;
+  }
+
+  if (!data.accessToken) {
+    console.log("[BG] getToken -> null (no accessToken)");
+    return null;
+  }
+
+  if (!data.expiry) {
+    console.log("[BG] getToken -> null (no expiry)");
+    return null;
+  }
+
+  if (data.expiry <= Date.now()) {
+    console.log("[BG] getToken -> null (expired)", {
+      now: Date.now(),
+      expiry: data.expiry
+    });
+    return null;
+  }
+
+  console.log("[BG] getToken -> OK", {
+    now: Date.now(),
+    expiry: data.expiry,
+    hasAccessToken: true
+  });
+
+  return data.accessToken;
+}
+
+async function checkDriveAuth() {
+  console.log("[BG] checkDriveAuth start");
+  const token = await getToken();
+  console.log("[BG] checkDriveAuth result", { connected: !!token });
+  return { connected: !!token };
 }
 
 
@@ -540,11 +690,36 @@ async function getStoredTokenData() {
 async function getToken() {
   const data = await getStoredTokenData();
 
+  console.log("[BG] getToken raw data =", data);
 
-  if (!data || !data.accessToken || !data.expiry || data.expiry <= Date.now()) {
+  if (!data) {
+    console.log("[BG] getToken -> null (no data)");
     return null;
   }
 
+  if (!data.accessToken) {
+    console.log("[BG] getToken -> null (no accessToken)");
+    return null;
+  }
+
+  if (!data.expiry) {
+    console.log("[BG] getToken -> null (no expiry)");
+    return null;
+  }
+
+  if (data.expiry <= Date.now()) {
+    console.log("[BG] getToken -> null (expired)", {
+      now: Date.now(),
+      expiry: data.expiry
+    });
+    return null;
+  }
+
+  console.log("[BG] getToken -> OK", {
+    now: Date.now(),
+    expiry: data.expiry,
+    hasAccessToken: true
+  });
 
   return data.accessToken;
 }
@@ -718,14 +893,6 @@ async function writeDriveFile(token, fileId, data) {
 
 
 // ───────── SYNC ─────────
-
-
-async function checkDriveAuth() {
-  const token = await getToken();
-  return {
-    connected: !!token
-  };
-}
 
 
 async function syncToDrive() {
@@ -948,7 +1115,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return result;
       },
 
-
       getReadChapters: async () => getReadChapters(request.data),
 
 
@@ -1038,7 +1204,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return { success: true };
       },
 
-
+      startFirefoxOAuth: async () => {
+        return await startFirefoxOAuth(request.data || {});
+      },
       checkDriveAuth: async () => checkDriveAuth(),
 
 

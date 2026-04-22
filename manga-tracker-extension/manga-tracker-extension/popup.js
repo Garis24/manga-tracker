@@ -3,9 +3,18 @@
 */
 const CLIENT_ID = "67925064642-k8s30qr54jje3b59n391siah2dtrss7m.apps.googleusercontent.com";
 const SCOPES = "https://www.googleapis.com/auth/drive.appdata";
-const REDIRECT_URI = chrome.identity.getRedirectURL();
+const IDENTITY_API = getIdentityApi();
+const REDIRECT_URI = IDENTITY_API.getRedirectURL();
 const CHROME_WEB_STORE_URL = 'https://chromewebstore.google.com/detail/manga-tracker/kobfdnepnoplkcgnpkcjellfeokhhnlk?authuser=0&hl=fr';
 
+function isKiwi() {
+  return /Kiwi/i.test(navigator.userAgent || "");
+}
+
+function getIdentityApi() {
+  if (isKiwi()) return chrome.identity;
+  return globalThis.browser?.identity || globalThis.chrome?.identity;
+}
 // ──────────────────────────────────────────────
 // DISCORD
 // ──────────────────────────────────────────────
@@ -179,41 +188,86 @@ btn.style.pointerEvents = oldPointerEvents || "";
 
 // ───────── AUTH ─────────
 
+function isFirefox() {
+  return typeof navigator !== "undefined" && /firefox/i.test(navigator.userAgent || "");
+}
+
+async function launchOAuthInPopup() {
+  console.log("[POPUP] launchOAuthInPopup start");
+  console.log("[POPUP] REDIRECT_URI =", REDIRECT_URI);
+
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    redirect_uri: REDIRECT_URI,
+    response_type: "token",
+    scope: SCOPES,
+    prompt: "consent"
+  });
+
+  console.log("[POPUP] params =", params.toString());
+
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  console.log("[POPUP] authUrl =", authUrl);
+
+  const redirectUrl = await new Promise((resolve, reject) => {
+    IDENTITY_API.launchWebAuthFlow(
+      { url: authUrl, interactive: true },
+      (responseUrl) => {
+        console.log("[POPUP] launchWebAuthFlow callback", {
+          responseUrl,
+          lastError: chrome.runtime.lastError?.message || null
+        });
+
+        if (chrome.runtime.lastError || !responseUrl) {
+          reject(new Error(chrome.runtime.lastError?.message || "Auth annulée"));
+          return;
+        }
+
+        resolve(responseUrl);
+      }
+    );
+  });
+
+  console.log("[POPUP] redirectUrl =", redirectUrl);
+
+  const hash = new URL(redirectUrl).hash.replace(/^#/, "");
+  console.log("[POPUP] hash =", hash);
+
+  const data = new URLSearchParams(hash);
+  const accessToken = data.get("access_token");
+  const expiresIn = parseInt(data.get("expires_in") || "3600", 10);
+
+  console.log("[POPUP] accessToken present =", !!accessToken);
+  console.log("[POPUP] expiresIn =", expiresIn);
+
+  if (!accessToken) {
+    throw new Error("token_absent");
+  }
+
+  return { accessToken, expiresIn };
+}
+
 async function launchOAuth() {
-const params = new URLSearchParams({
-client_id: CLIENT_ID,
-redirect_uri: REDIRECT_URI,
-response_type: "token",
-scope: SCOPES,
-prompt: "consent"
-});
+  if (isFirefox()) {
+    console.log("[POPUP] Firefox détecté -> OAuth lancé via background");
+    const resp = await sendMsg("startFirefoxOAuth", {
+      clientId: CLIENT_ID,
+      scopes: SCOPES
+    });
 
-const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    console.log("[POPUP] startFirefoxOAuth resp =", resp);
 
-const redirectUrl = await new Promise((resolve, reject) => {
-chrome.identity.launchWebAuthFlow(
-{ url: authUrl, interactive: true },
-(responseUrl) => {
-if (chrome.runtime.lastError || !responseUrl) {
-reject(new Error(chrome.runtime.lastError?.message || "Auth annulée"));
-return;
-}
-resolve(responseUrl);
-}
-);
-});
+    if (!resp?.success) {
+      throw new Error(resp?.reason || "firefox_oauth_failed");
+    }
 
-const hash = new URL(redirectUrl).hash.replace(/^#/, "");
-const data = new URLSearchParams(hash);
+    return {
+      accessToken: resp.accessToken,
+      expiresIn: resp.expiresIn || 3600
+    };
+  }
 
-const accessToken = data.get("access_token");
-const expiresIn = parseInt(data.get("expires_in") || "3600", 10);
-
-if (!accessToken) {
-throw new Error("token_absent");
-}
-
-return { accessToken, expiresIn };
+  return await launchOAuthInPopup();
 }
 
 async function checkSyncStatus() {
@@ -233,30 +287,42 @@ setDriveStatus("idle");
 }
 
 async function connectDrive() {
-const current = await sendMsg("checkDriveAuth");
-if (current?.connected) {
-setDriveStatus("connected");
-showToast("Google Drive déjà connecté", "success");
-return;
-}
+  const current = await sendMsg("checkDriveAuth");
+  console.log("[POPUP] initial checkDriveAuth =", current);
 
-setDriveStatus("syncing");
+  if (current?.connected) {
+    setDriveStatus("connected");
+    return;
+  }
 
-try {
-const { accessToken, expiresIn } = await launchOAuth();
+  setDriveStatus("syncing", "OAuth en cours...");
 
-const storeResp = await sendMsg("storeToken", { accessToken, expiresIn });
-if (!storeResp?.success) {
-throw new Error(storeResp?.reason || "store_failed");
-}
+  try {
+    const { accessToken, expiresIn } = await launchOAuth();
+    console.log("[POPUP] token reçu =", !!accessToken, "expiresIn =", expiresIn);
 
-setDriveStatus("connected");
-showToast("Google Drive connecté", "success");
-} catch (err) {
-console.error(err);
-setDriveStatus("idle", "Erreur de connexion");
-showToast("Connexion annulée ou refusée", "error");
-}
+    if (!isFirefox()) {
+      const storeResp = await sendMsg("storeToken", { accessToken, expiresIn });
+      console.log("[POPUP] storeToken resp =", storeResp);
+    } else {
+      console.log("[POPUP] Firefox: token déjà stocké par le background");
+    }
+
+    const verifyResp = await sendMsg("checkDriveAuth");
+    console.log("[POPUP] verify checkDriveAuth =", verifyResp);
+
+    if (!verifyResp?.connected) {
+      setDriveStatus("idle", "Token absent après OAuth");
+      throw new Error("token_not_reloaded");
+    }
+
+    setDriveStatus("connected", "Drive connecté");
+    showToast("Google Drive connecté", "success");
+  } catch (err) {
+    console.error("[POPUP] connectDrive error =", err);
+    setDriveStatus("idle", `Erreur: ${err.message}`);
+    showToast(`Erreur: ${err.message}`, "error");
+  }
 }
 
 // ───────── ACTIONS ─────────
@@ -537,56 +603,81 @@ document.getElementById('stats-chapters').textContent = formatChaptersLabel(tota
 }
 
 function applyFilters() {
-const q = document.getElementById('search-input').value.toLowerCase().trim();
-const status = document.getElementById('filter-status').value;
+  const searchInput = document.getElementById('search-input');
+  const filterStatus = document.getElementById('filter-status');
 
-filteredMangas = allMangas.filter(m => {
-const matchQ = !q ||
-(m.title || '').toLowerCase().includes(q) ||
-(m.slug || '').toLowerCase().includes(q) ||
-(m.domain || '').toLowerCase().includes(q);
-const matchStatus = !status || (m.status || 'reading') === status;
-return matchQ && matchStatus;
-});
-renderMangaList();
+  const q = (searchInput?.value || '').toLowerCase().trim();
+  const status = filterStatus?.value || '';
+
+  filteredMangas = allMangas.filter(m => {
+    const matchQ = !q ||
+      (m.title || '').toLowerCase().includes(q) ||
+      (m.slug || '').toLowerCase().includes(q) ||
+      (m.domain || '').toLowerCase().includes(q);
+
+    const matchStatus = !status || (m.status || 'reading') === status;
+    return matchQ && matchStatus;
+  });
+
+  renderMangaList();
 }
 
 function renderMangaList() {
-const container = document.getElementById('manga-list');
-const emptyState = document.getElementById('empty-state');
+  const container = document.getElementById('manga-list');
+  const emptyState = document.getElementById('empty-state');
 
-if (filteredMangas.length === 0) {
-container.innerHTML = '';
-container.appendChild(emptyState);
-emptyState.classList.remove('hidden');
-return;
-}
+  if (!container) {
+    console.warn('[POPUP] renderMangaList: #manga-list introuvable');
+    return;
+  }
 
-emptyState.classList.add('hidden');
+  if (filteredMangas.length === 0) {
+    container.innerHTML = '';
 
-container.innerHTML = filteredMangas.map((manga, i) => {
-const initial = (manga.title || '?').charAt(0).toUpperCase();
-const lastCh = manga.lastReadChapter ? `Ch. ${manga.lastReadChapter}` : '—';
-const lastDate = formatDate(manga.lastReadAt);
-const st = STATUS_LABELS[manga.status || 'reading'];
-const pct = manga.totalChapters > 0
-? Math.round((manga.totalRead / manga.totalChapters) * 100) + '%'
-: '';
-return `
-<div class="manga-item" data-index="${i}">
-<div class="manga-item-icon">${initial}</div>
-<div class="manga-item-info">
-<div class="manga-item-title">${escapeHtml(manga.title || manga.slug)}</div>
-<div class="manga-item-meta">${escapeHtml(manga.domain)} · ${lastCh}${pct ? ' · ' + pct : ''} · ${lastDate}</div>
-</div>
-<span class="status-pill ${st.cls}">${manga.status === 'reading' ? manga.totalRead : st.label}</span>
-</div>
-`;
-}).join('');
+    if (emptyState) {
+      container.appendChild(emptyState);
+      emptyState.classList.remove('hidden');
+    } else {
+      container.innerHTML = `
+        <div id="empty-state" class="empty-state">
+          <p>Aucun manga suivi pour le moment.</p>
+        </div>
+      `;
+    }
 
-container.querySelectorAll('.manga-item').forEach(el => {
-el.addEventListener('click', () => openMangaDetail(filteredMangas[parseInt(el.dataset.index)]));
-});
+    return;
+  }
+
+  if (emptyState) {
+    emptyState.classList.add('hidden');
+  }
+
+  container.innerHTML = filteredMangas.map((manga, i) => {
+    const initial = (manga.title || '?').charAt(0).toUpperCase();
+    const lastCh = manga.lastReadChapter ? `Ch. ${manga.lastReadChapter}` : '—';
+    const lastDate = formatDate(manga.lastReadAt);
+    const st = STATUS_LABELS[manga.status || 'reading'];
+    const pct = manga.totalChapters > 0
+      ? Math.round((manga.totalRead / manga.totalChapters) * 100) + '%'
+      : '';
+
+    return `
+      <div class="manga-item" data-index="${i}">
+        <div class="manga-item-icon">${initial}</div>
+        <div class="manga-item-info">
+          <div class="manga-item-title">${escapeHtml(manga.title || manga.slug)}</div>
+          <div class="manga-item-meta">${escapeHtml(manga.domain)} · ${lastCh}${pct ? ' · ' + pct : ''} · ${lastDate}</div>
+        </div>
+        <span class="status-pill ${st.cls}">${manga.status === 'reading' ? manga.totalRead : st.label}</span>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.manga-item').forEach(el => {
+    el.addEventListener('click', () => {
+      openMangaDetail(filteredMangas[parseInt(el.dataset.index, 10)]);
+    });
+  });
 }
 
 function escapeHtml(str) {

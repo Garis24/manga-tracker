@@ -3,9 +3,18 @@
 */
 const CLIENT_ID = "67925064642-k8s30qr54jje3b59n391siah2dtrss7m.apps.googleusercontent.com";
 const SCOPES = "https://www.googleapis.com/auth/drive.appdata";
-const REDIRECT_URI = browser.identity.getRedirectURL();
+const IDENTITY_API = getIdentityApi();
+const REDIRECT_URI = IDENTITY_API.getRedirectURL();
 const CHROME_WEB_STORE_URL = 'https://chromewebstore.google.com/detail/manga-tracker/kobfdnepnoplkcgnpkcjellfeokhhnlk?authuser=0&hl=fr';
 
+function isKiwi() {
+  return /Kiwi/i.test(navigator.userAgent || "");
+}
+
+function getIdentityApi() {
+  if (isKiwi()) return chrome.identity;
+  return globalThis.browser?.identity || globalThis.chrome?.identity;
+}
 // ──────────────────────────────────────────────
 // DISCORD
 // ──────────────────────────────────────────────
@@ -201,7 +210,7 @@ async function launchOAuthInPopup() {
   console.log("[POPUP] authUrl =", authUrl);
 
   const redirectUrl = await new Promise((resolve, reject) => {
-    browser.identity.launchWebAuthFlow(
+    IDENTITY_API.launchWebAuthFlow(
       { url: authUrl, interactive: true },
       (responseUrl) => {
         console.log("[POPUP] launchWebAuthFlow callback", {
